@@ -37,7 +37,14 @@ export type ResumeData = {
 };
 
 interface ResumeStore {
+    currentResumeId: string | null;
+    templateId: string;
+    title: string;
     data: ResumeData;
+    setCurrentResumeId: (id: string | null) => void;
+    setTemplateId: (id: string) => void;
+    setTitle: (title: string) => void;
+    setResumeData: (data: ResumeData) => void;
     updatePersonalInfo: (info: Partial<PersonalInfo>) => void;
     addExperience: (exp: Experience) => void;
     updateExperience: (id: string, exp: Partial<Experience>) => void;
@@ -47,6 +54,7 @@ interface ResumeStore {
     removeEducation: (id: string) => void;
     updateSkills: (skills: string) => void;
     updateProjects: (projects: string) => void;
+    reset: () => void;
 }
 
 const initialData: ResumeData = {
@@ -66,7 +74,14 @@ const initialData: ResumeData = {
 };
 
 export const useResumeStore = create<ResumeStore>((set) => ({
+    currentResumeId: null,
+    templateId: 'modern-clean', // Default template
+    title: '',
     data: initialData,
+    setCurrentResumeId: (id) => set({ currentResumeId: id }),
+    setTemplateId: (id) => set({ templateId: id }),
+    setTitle: (title) => set({ title }),
+    setResumeData: (data) => set({ data }),
     updatePersonalInfo: (info) =>
         set((state) => ({
             data: {
@@ -124,4 +139,5 @@ export const useResumeStore = create<ResumeStore>((set) => ({
         set((state) => ({
             data: { ...state.data, projects },
         })),
+    reset: () => set({ currentResumeId: null, title: '', templateId: 'modern-clean', data: initialData }),
 }));

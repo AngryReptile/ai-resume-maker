@@ -9,6 +9,78 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
+  --animate-warp: warp 20s ease-in-out infinite alternate;
+  --animate-warp-reverse: warp-reverse 25s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes warp {
+  0% {
+    transform: scale(1) translate(0px, 0px);
+    opacity: 0.7;
+  }
+
+  33% {
+    transform: scale(1.15) translate(30px, -40px);
+    opacity: 1;
+  }
+
+  66% {
+    transform: scale(0.9) translate(-20px, 30px);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scale(1.05) translate(40px, 10px);
+    opacity: 0.8;
+  }
+}
+
+@keyframes warp-reverse {
+  0% {
+    transform: scale(1) translate(0px, 0px);
+    opacity: 0.8;
+  }
+
+  33% {
+    transform: scale(0.9) translate(-30px, 20px);
+    opacity: 0.6;
+  }
+
+  66% {
+    transform: scale(1.1) translate(20px, -30px);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1) translate(-10px, -10px);
+    opacity: 0.7;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,15 +100,19 @@ body {
   body * {
     visibility: hidden;
   }
-  .my-print-container, .my-print-container * {
+
+  .my-print-container,
+  .my-print-container * {
     visibility: visible;
   }
+
   .my-print-container {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
   }
+
   @page {
     margin: 0;
   }
