@@ -8,6 +8,7 @@ import { supabase } from '@/lib/supabase';
 import { useResumeStore, ResumeData } from '@/store/useResumeStore';
 import { useAuth } from '@/hooks/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
+import { exportToDocx } from '@/lib/exportUtils';
 
 export default function Dashboard() {
     const { user, profile, loading: authLoading } = useAuth();
@@ -87,6 +88,26 @@ export default function Dashboard() {
         } catch (error) {
             console.error('Error deleting resume:', error);
         }
+    };
+
+    const handleDownload = (resume: any) => {
+        const data: ResumeData = {
+            ...resume.content,
+            // Ensure all fields are present for export
+            personalInfo: resume.content.personalInfo || { fullName: '', jobTitle: '', email: '', phone: '', location: '', website: '', summary: '' },
+            experience: resume.content.experience || [],
+            education: resume.content.education || [],
+            skills: resume.content.skills || [],
+            projects: resume.content.projects || [],
+            languages: resume.content.languages || '',
+            interests: resume.content.interests || '',
+            visibleSections: resume.content.visibleSections || ['personalInfo', 'experience', 'education', 'skills', 'projects', 'languages', 'interests'],
+            sectionOrder: resume.content.sectionOrder || ['personalInfo', 'experience', 'education', 'skills', 'projects', 'languages', 'interests'],
+            sectionLabels: resume.content.sectionLabels || {},
+            customSections: resume.content.customSections || [],
+            sidebarSections: resume.content.sidebarSections || []
+        };
+        exportToDocx(data, resume.title || 'Resume');
     };
 
     if (authLoading || loading) {
@@ -197,6 +218,7 @@ export default function Dashboard() {
                                     delay={i * 0.1}
                                     onEdit={() => handleEdit(resume)}
                                     onDelete={() => handleDelete(resume.id)}
+                                    onDownload={() => handleDownload(resume)}
                                 />
                             ))}
                         </div>
@@ -235,7 +257,7 @@ function StatCard({ label, value, icon, delay }: { label: string, value: string,
     );
 }
 
-function ResumeCard({ resume, delay, onEdit, onDelete }: { resume: any, delay: number, onEdit: () => void, onDelete: () => void }) {
+function ResumeCard({ resume, delay, onEdit, onDelete, onDownload }: { resume: any, delay: number, onEdit: () => void, onDelete: () => void, onDownload: () => void }) {
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -267,7 +289,10 @@ function ResumeCard({ resume, delay, onEdit, onDelete }: { resume: any, delay: n
                         Modify Blueprint
                     </button>
                     <div className="flex gap-4 w-full">
-                        <button className="flex-1 p-5 rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center group/btn">
+                        <button 
+                            onClick={onDownload}
+                            className="flex-1 p-5 rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all flex items-center justify-center group/btn"
+                        >
                             <Download className="h-4 w-4 group-hover/btn:translate-y-1 transition-transform" />
                         </button>
                         <button

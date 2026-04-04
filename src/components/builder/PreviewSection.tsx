@@ -127,22 +127,26 @@ export default function PreviewSection() {
                 <motion.div 
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-2 liquid-glass p-1.5 rounded-2xl border border-white/5 shadow-2xl"
+                    className="flex items-center gap-1 liquid-glass p-1.5 rounded-2xl border border-white/5 shadow-2xl group/download"
                 >
-                    <button
-                        onClick={handleDocxExport}
-                        className="group flex items-center gap-2 rounded-xl bg-white/5 hover:bg-white/10 px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-white border border-white/5 transition-all hover:scale-105 active:scale-95"
-                    >
-                        <FileDown className="h-3 w-3 text-indigo-400" />
-                        DOCX
-                    </button>
-                    <button
-                        onClick={handlePrint}
-                        className="group flex items-center gap-2 rounded-xl bg-white text-zinc-950 px-5 py-2 text-[9px] font-black uppercase tracking-[0.2em] shadow-xl transition-all hover:scale-105 active:scale-95 font-display"
-                    >
-                        <Printer className="h-3 w-3" />
-                        PDF Export
-                    </button>
+                    <div className="flex items-center">
+                        <button
+                            onClick={handlePrint}
+                            className="flex items-center gap-2 rounded-l-xl bg-white text-zinc-950 px-5 py-2.5 text-[9px] font-black uppercase tracking-[0.2em] shadow-xl transition-all hover:bg-zinc-100 active:scale-95 font-display"
+                        >
+                            <Download className="h-3 w-3 animate-bounce" />
+                            Download PDF
+                        </button>
+                        <div className="w-px h-6 bg-zinc-200/20" />
+                        <button
+                            onClick={handleDocxExport}
+                            className="flex items-center gap-2 rounded-r-xl bg-white/5 hover:bg-white/10 px-4 py-2.5 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-white transition-all active:scale-95 border-l border-white/5"
+                            title="Export as Word Document"
+                        >
+                            <FileDown className="h-3.5 w-3.5 text-indigo-400" />
+                            DOCX
+                        </button>
+                    </div>
                 </motion.div>
                 
                 <motion.button
