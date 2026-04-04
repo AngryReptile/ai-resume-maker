@@ -2,18 +2,39 @@
 
 import { useState, useEffect } from 'react';
 import { useResumeStore } from '@/store/useResumeStore';
-import { ChevronRight, ChevronLeft, Bot, Sparkles, CheckCircle2 } from 'lucide-react';
-import { countryCodes } from '@/lib/countryCodes';
-import { jobTitles } from '@/lib/jobTitles';
+import { Layout, Brain, Zap, Settings2, Plus, LogOut, Sparkles, GripVertical, MousePointer2, ShieldCheck, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
 
-const steps = ['Personal', 'Experience', 'Education', 'Skills & Projects'];
+const tabs = [
+    { id: 'structure', label: 'Architecture', icon: Layout },
+    { id: 'ai', label: 'AI Assistant', icon: Brain },
+    { id: 'coach', label: 'Resume Coach', icon: ShieldCheck },
+];
 
 export default function FormSection() {
-    const [currentStep, setCurrentStep] = useState(0);
-    const [isEnhancing, setIsEnhancing] = useState<string | null>(null);
-    const [showJobSuggestions, setShowJobSuggestions] = useState(false);
+    const [activeTab, setActiveTab] = useState('structure');
+    const activeField = useResumeStore((state) => state.activeField);
     const [showTutorial, setShowTutorial] = useState(false);
-    const [validationError, setValidationError] = useState<string | null>(null);
+    const [isEnhancing, setIsEnhancing] = useState<string | null>(null);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    
+    const coachFeedback = useResumeStore((state) => state.coachFeedback);
+    const setCoachFeedback = useResumeStore((state) => state.setCoachFeedback);
+    const visibleSections = useResumeStore((state) => state.visibleSections);
+    const toggleSection = useResumeStore((state) => state.toggleSection);
+    const sectionOrder = useResumeStore((state) => state.sectionOrder);
+    const setSectionOrder = useResumeStore((state) => state.setSectionOrder);
+    const isDrawerOpen = useResumeStore((state) => state.isDrawerOpen);
+    const setDrawerOpen = useResumeStore((state) => state.setDrawerOpen);
+    const data = useResumeStore((state) => state.data);
+    const updatePersonalInfo = useResumeStore((state) => state.updatePersonalInfo);
+    const updateExperience = useResumeStore((state) => state.updateExperience);
+
+    useEffect(() => {
+        if (activeField) {
+            setActiveTab('ai');
+        }
+    }, [activeField]);
 
     useEffect(() => {
         const hasSeenTutorial = localStorage.getItem('resume-ai-tutorial');
@@ -27,44 +48,7 @@ export default function FormSection() {
         localStorage.setItem('resume-ai-tutorial', 'true');
     };
 
-    const data = useResumeStore((state) => state.data);
-    const updatePersonalInfo = useResumeStore((state) => state.updatePersonalInfo);
-    const updateExperience = useResumeStore((state) => state.updateExperience);
-
-    const validateStep = (step: number) => {
-        if (step === 0) {
-            const { fullName, email, phone } = data.personalInfo;
-            if (!fullName.trim() || !email.trim() || !phone.trim()) {
-                setValidationError('Please fill in your Full Name, Email, and Phone number to proceed.');
-                return false;
-            }
-        } else if (step === 2) {
-            const hasValidEducation = data.education.some(e => e.school.trim() && e.degree.trim());
-            if (data.education.length === 0 || !hasValidEducation) {
-                setValidationError('Please add at least one valid Education entry to proceed.');
-                return false;
-            }
-        } else if (step === 3) {
-            if (!data.skills.trim()) {
-                setValidationError('Please enter your Core Skills to generate a strong resume.');
-                return false;
-            }
-        }
-        setValidationError(null);
-        return true;
-    };
-
-    const nextStep = () => {
-        if (validateStep(currentStep)) {
-            setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
-        }
-    };
-    const prevStep = () => {
-        setValidationError(null);
-        setCurrentStep((prev) => Math.max(prev - 1, 0));
-    };
-
-    const handleEnhance = async (type: 'summary' | 'experience', text: string, action: 'generate' | 'enhance', id?: string, context?: { position: string, company: string }) => {
+    const handleEnhance = async (type: 'summary' | 'experience' | 'skills' | 'projects', text: string, action: 'generate' | 'enhance', id?: string, context?: { position: string, company: string }) => {
         if (action === 'enhance' && !text.trim()) return;
 
         const actionKey = `${action}-${type}-${id || ''}`;
@@ -73,379 +57,484 @@ export default function FormSection() {
             const response = await fetch('/api/ai/enhance', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type, text, action, context })
+                body: JSON.stringify({ 
+                    type, 
+                    text, 
+                    action, 
+                    context: { ...context, position: context?.position || useResumeStore.getState().data.personalInfo.jobTitle } 
+                })
             });
 
-            const data = await response.json();
+            const resData = await response.json();
 
-            if (response.ok && data.result) {
+            if (response.ok && resData.result) {
                 if (type === 'summary') {
-                    updatePersonalInfo({ summary: data.result });
+                    updatePersonalInfo({ summary: resData.result });
                 } else if (type === 'experience' && id) {
-                    updateExperience(id, { description: data.result });
+                    updateExperience(id, { description: resData.result });
+                } else if (type === 'projects' && id) {
+                    useResumeStore.getState().updateProject(id, { content: resData.result });
+                } else if (type === 'skills') {
+                    // If AI returns a list of skills, split and map to objects
+                    if (typeof resData.result === 'string') {
+                        const skillsArray = resData.result.split(',').map((s: string) => ({
+                            id: Math.random().toString(36).substr(2, 9),
+                            name: s.trim()
+                        })).filter((s: { name: string }) => s.name);
+                        useResumeStore.getState().updateSkills(skillsArray);
+                    } else if (Array.isArray(resData.result)) {
+                        useResumeStore.getState().updateSkills(resData.result.map((s: any) => ({
+                            id: Math.random().toString(36).substr(2, 9),
+                            name: typeof s === 'string' ? s : s.name
+                        })));
+                    }
                 }
-            } else {
-                alert('Failed to enhance text: ' + (data.error || 'Unknown error'));
             }
         } catch (error) {
             console.error(error);
-            alert('Network error occurred.');
         } finally {
             setIsEnhancing(null);
         }
     };
 
-    const filteredJobTitles = jobTitles.filter(
-        (job) =>
-            data.personalInfo.jobTitle.length >= 2 &&
-            job.toLowerCase().includes(data.personalInfo.jobTitle.toLowerCase()) &&
-            job.toLowerCase() !== data.personalInfo.jobTitle.toLowerCase()
-    ).slice(0, 5);
+    const handleCoachAnalyze = async () => {
+        setIsAnalyzing(true);
+        try {
+            const response = await fetch('/api/ai/coach', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ resumeData: data })
+            });
+            const resData = await response.json();
+            if (response.ok && resData.result) {
+                setCoachFeedback(resData.result);
+            }
+        } catch (error) {
+            console.error('Coach Error:', error);
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
 
+    const handleTabClick = (tabId: string) => {
+        if (activeTab === tabId && isDrawerOpen) {
+            setDrawerOpen(false);
+        } else {
+            setActiveTab(tabId);
+            setDrawerOpen(true);
+        }
+    };
 
     return (
-        <div className="flex h-full flex-col bg-transparent border-r border-white/10 relative">
-
+        <div className="flex h-full pointer-events-none z-50">
             {/* AI Tutorial Overlay */}
             {showTutorial && (
-                <div className="absolute inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm transition-opacity duration-300">
-                    <div className="bg-zinc-900 border border-indigo-500/30 rounded-2xl p-8 max-w-sm shadow-[0_0_50px_-10px_rgba(99,102,241,0.5)] transform animate-[fadeIn_0.5s_ease-out]">
-                        <div className="flex justify-center mb-6 relative">
-                            <div className="absolute -top-12 animate-bounce">
-                                <Sparkles className="h-10 w-10 text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.8)]" />
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-2xl pointer-events-auto">
+                    <div className="liquid-glass border-white/10 rounded-[3rem] p-12 max-w-sm shadow-2xl relative overflow-hidden">
+                        <div className="absolute inset-0 bg-noise opacity-[0.03] pointer-events-none" />
+                        <div className="flex justify-center mb-10">
+                            <div className="h-20 w-20 rounded-[2rem] bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 shadow-2xl">
+                                <Brain className="h-10 w-10 text-indigo-400 animate-pulse" />
                             </div>
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-4 text-center">Meet Your AI Assistant</h3>
-                        <p className="text-zinc-300 text-sm leading-relaxed mb-6 text-center">
-                            Watch out for the <strong className="text-emerald-400 font-bold">AI</strong> and <strong className="text-indigo-400 font-bold">Enhance AI</strong> buttons on the form.
+                        <h3 className="text-3xl font-black text-white mb-6 text-center uppercase tracking-tighter font-display">AI Assistant</h3>
+                        <p className="text-zinc-500 text-[11px] leading-relaxed mb-10 text-center font-bold uppercase tracking-widest">
+                            Enhance and polish your resume content effortlessly.
                             <br /><br />
-                            <strong className="text-emerald-400">AI (Sparkles)</strong> completely generates your sections from scratch based on just your Job Title.
-                            <br /><br />
-                            <strong className="text-indigo-400">Enhance AI (Robot)</strong> proofreads and upgrades the text you&apos;ve already handwritten.
+                            <span className="text-indigo-400">Contextual Refinement</span><br />
+                            Select elements for AI enhancement.
                         </p>
                         <button
                             onClick={dismissTutorial}
-                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition-all shadow-[0_0_15px_-3px_rgba(99,102,241,0.6)]"
+                            className="w-full bg-white text-zinc-950 font-black uppercase tracking-[0.3em] text-[10px] py-5 rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-2xl"
                         >
-                            Got it, let&apos;s build!
+                            Get Started
                         </button>
                     </div>
                 </div>
             )}
 
-            {/* Stepper */}
-            <div className="flex items-center justify-between border-b border-white/10 px-4 sm:px-6 py-4">
-                {steps.map((step, idx) => {
-                    const isCompleted = idx < currentStep;
-                    const isActive = idx === currentStep;
+            {/* Sidebar Navigation Rail */}
+            <div className="w-[72px] h-full bg-[#0a0a0f]/90 backdrop-blur-3xl border-r border-white/5 flex flex-col items-center py-6 gap-6 pointer-events-auto shadow-2xl z-50">
+                <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 mb-4">
+                    <Zap className="h-6 w-6 text-indigo-400 animate-pulse" />
+                </div>
+                {tabs.map((tab) => {
+                    const Icon = tab.icon;
+                    const isActive = activeTab === tab.id && isDrawerOpen;
                     return (
-                        <div key={step} className="flex items-center w-full justify-between">
-                            <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-all duration-300 
-                                ${isActive ? 'bg-indigo-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.6)] scale-110'
-                                    : isCompleted ? 'bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.5)]'
-                                        : 'bg-white/5 text-zinc-500'}`}
-                            >
-                                {isCompleted ? <CheckCircle2 className="h-5 w-5" /> : idx + 1}
-                            </div>
-                            {idx < steps.length - 1 && (
-                                <div className={`h-1 w-full mx-2 sm:mx-4 rounded transition-all duration-500 
-                                    ${isCompleted ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]'
-                                        : 'bg-white/5'}`}
-                                />
-                            )}
-                        </div>
+                        <button
+                            key={tab.id}
+                            onClick={() => handleTabClick(tab.id)}
+                            className={`p-4 rounded-[1.5rem] transition-all duration-700 relative group border
+                                ${isActive ? 'bg-white text-zinc-950 border-white shadow-2xl scale-110' : 'text-zinc-600 border-transparent hover:text-white hover:bg-white/5'}`}
+                            title={tab.label}
+                        >
+                            <Icon className="h-5 w-5" />
+                        </button>
                     );
                 })}
+                <div className="mt-auto">
+                    <button className="p-4 rounded-2xl text-zinc-700 hover:text-indigo-400 transition-colors">
+                        <Settings2 className="h-5 w-5" />
+                    </button>
+                </div>
             </div>
 
-            {/* Form Content */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24">
-                <h2 className="text-2xl font-bold text-white mb-6 animate-[fadeIn_0.3s_ease-out]">{steps[currentStep]} Information</h2>
-
-                {validationError && (
-                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm font-semibold animate-[fadeIn_0.3s]">
-                        {validationError}
-                    </div>
-                )}
-
-                {currentStep === 0 && (
-                    <div className="space-y-4 animate-[fadeIn_0.3s_ease-out]">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-zinc-400">Full Name <span className="text-red-500">*</span></label>
-                                <input
-                                    type="text"
-                                    value={data.personalInfo.fullName}
-                                    onChange={(e) => updatePersonalInfo({ fullName: e.target.value })}
-                                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                                    placeholder="Your Name"
-                                />
+            {/* Expandable Drawer */}
+            <AnimatePresence>
+                {isDrawerOpen && (
+                    <motion.div 
+                        initial={{ x: '-100%', opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: '-100%', opacity: 0 }}
+                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                        className="w-[380px] h-full bg-[#070707]/95 backdrop-blur-3xl border-r border-white/5 flex flex-col pointer-events-auto absolute left-[72px] top-0 shadow-[40px_0_100px_rgba(0,0,0,0.8)] z-40 overflow-hidden"
+                    >
+                        <div className="absolute inset-0 bg-noise opacity-[0.02] pointer-events-none" />
+                        
+                        {/* Drawer Header */}
+                        <div className="px-6 py-6 border-b border-white/5 flex items-center justify-between relative z-10">
+                            <div className="flex flex-col">
+                                <span className="text-[8px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-1 italic">Current Section</span>
+                                <h2 className="text-lg font-black text-white uppercase tracking-tighter flex items-center gap-3 font-display">
+                                    {(() => {
+                                        const Icon = tabs.find(t => t.id === activeTab)?.icon || Sparkles;
+                                        return <Icon className="h-4 w-4 text-indigo-400" />;
+                                    })()}
+                                    {tabs.find(t => t.id === activeTab)?.label}
+                                </h2>
                             </div>
-                            <div className="space-y-2 relative">
-                                <label className="text-sm font-medium text-zinc-400">Job Title</label>
-                                <input
-                                    type="text"
-                                    value={data.personalInfo.jobTitle}
-                                    onChange={(e) => {
-                                        updatePersonalInfo({ jobTitle: e.target.value });
-                                        setShowJobSuggestions(true);
-                                    }}
-                                    onFocus={() => setShowJobSuggestions(true)}
-                                    onBlur={() => {
-                                        // Small delay to allow clicking a suggestion
-                                        setTimeout(() => setShowJobSuggestions(false), 200);
-                                    }}
-                                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                                    placeholder="Your Job Title"
-                                />
-                                {showJobSuggestions && filteredJobTitles.length > 0 && (
-                                    <ul className="absolute z-10 w-full mt-1 max-h-48 overflow-y-auto rounded-lg border border-white/10 bg-zinc-900 py-1 shadow-xl">
-                                        {filteredJobTitles.map((job) => (
-                                            <li
-                                                key={job}
-                                                className="cursor-pointer px-4 py-2 text-sm text-zinc-300 hover:bg-indigo-500/20 hover:text-white"
-                                                onClick={() => {
-                                                    updatePersonalInfo({ jobTitle: job });
-                                                    setShowJobSuggestions(false);
-                                                }}
-                                            >
-                                                {job}
-                                            </li>
-                                        ))}
-                                    </ul>
+                            <button 
+                                onClick={() => setDrawerOpen(false)}
+                                className="h-8 w-8 flex items-center justify-center text-zinc-600 hover:text-white rounded-lg hover:bg-white/5 transition-all border border-transparent hover:border-white/10"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        {/* Drawer Content */}
+                        <div className="flex-1 overflow-y-auto relative custom-scrollbar z-10">
+                            <AnimatePresence mode="wait">
+                                {activeTab === 'structure' && (
+                                    <motion.div
+                                        key="structure"
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="p-10 space-y-10"
+                                    >
+                                        <button
+                                            onClick={() => useResumeStore.getState().setIsRearrangeOpen(true)}
+                                            className="w-full group relative flex items-center justify-center gap-3 py-6 rounded-3xl bg-indigo-500 hover:bg-indigo-600 text-white shadow-[0_15px_30px_rgba(99,102,241,0.2)] transition-all hover:scale-[1.02] active:scale-95 border border-indigo-400/20"
+                                        >
+                                            <div className="absolute inset-0 bg-noise opacity-10" />
+                                            <MousePointer2 className="h-4 w-4 relative z-10 animate-bounce" />
+                                            <span className="text-[10px] font-black uppercase tracking-[0.4em] relative z-10 font-display">Rearrange Architecture</span>
+                                        </button>
+
+                                        <div className="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
+                                            <p className="text-[10px] text-zinc-600 leading-relaxed font-bold uppercase tracking-widest text-center">
+                                                Enable or disable core modules to tailor your professional profile narrative.
+                                            </p>
+                                        </div>
+
+                                        <div className="flex items-center justify-between mb-6 px-2">
+                                            <p className="text-[11px] text-zinc-600 leading-relaxed font-bold uppercase tracking-widest">
+                                                Architecture & Structure
+                                            </p>
+                                            <div className="flex items-center gap-2">
+                                                <div className="relative group/add">
+                                                    <input 
+                                                        type="text"
+                                                        placeholder="New Module Title..."
+                                                        className="w-40 bg-zinc-900/50 border border-white/5 rounded-xl px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-white outline-none focus:border-indigo-500/50 transition-all opacity-0 group-hover/add:opacity-100 focus:opacity-100"
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') {
+                                                                const val = e.currentTarget.value.trim();
+                                                                if (val) {
+                                                                    useResumeStore.getState().addCustomSection(val);
+                                                                    e.currentTarget.value = '';
+                                                                }
+                                                            }
+                                                        }}
+                                                    />
+                                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-700 pointer-events-none group-hover/add:opacity-0 transition-opacity">
+                                                        <Plus className="h-3 w-3" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <Reorder.Group 
+                                            axis="y" 
+                                            values={sectionOrder} 
+                                            onReorder={setSectionOrder}
+                                            className="space-y-4"
+                                        >
+                                            {sectionOrder.map((id) => {
+                                                const label = useResumeStore.getState().sectionLabels[id] || id;
+                                                const isActive = visibleSections.includes(id);
+                                                const isCustom = id.startsWith('custom-');
+
+                                                return (
+                                                    <Reorder.Item 
+                                                        key={id} 
+                                                        value={id}
+                                                        className="w-full flex items-center justify-between p-4 rounded-xl bg-white/[0.01] border border-white/5 hover:bg-white/[0.03] hover:border-white/10 transition-all group cursor-grab active:cursor-grabbing"
+                                                    >
+                                                        <div className="flex items-center gap-4 flex-1">
+                                                            <GripVertical className="h-4 w-4 text-zinc-700 group-hover:text-zinc-500 transition-colors shrink-0" />
+                                                            <div className={`h-2.5 w-2.5 rounded-full transition-all duration-700 shrink-0 ${isActive ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]' : 'bg-zinc-800'}`} />
+                                                            <input 
+                                                                type="text"
+                                                                value={label}
+                                                                onChange={(e) => useResumeStore.getState().updateSectionLabel(id, e.target.value)}
+                                                                className={`bg-transparent border-none outline-none text-[10px] font-black uppercase tracking-[0.2em] transition-colors flex-1 min-w-0 ${isActive ? 'text-zinc-200 font-display' : 'text-zinc-600'}`}
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            />
+                                                        </div>
+                                                        <div className="flex items-center gap-4 shrink-0">
+                                                            {isCustom && (
+                                                                <button 
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        useResumeStore.getState().removeCustomSection(id);
+                                                                    }}
+                                                                    className="text-zinc-700 hover:text-rose-500 transition-colors p-2"
+                                                                >
+                                                                    <LogOut className="h-3 w-3 rotate-45" />
+                                                                </button>
+                                                            )}
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    toggleSection(id);
+                                                                }}
+                                                                className={`h-6 w-10 rounded-full relative p-1 transition-all duration-700 ${isActive ? 'bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.3)]' : 'bg-white/5 border border-white/10'}`}
+                                                            >
+                                                                <motion.div 
+                                                                    animate={{ x: isActive ? 16 : 0 }}
+                                                                    className={`h-4 w-4 rounded-full shadow-2xl ${isActive ? 'bg-white' : 'bg-zinc-700'}`} 
+                                                                />
+                                                            </button>
+                                                        </div>
+                                                    </Reorder.Item>
+                                                );
+                                            })}
+                                        </Reorder.Group>
+                                    </motion.div>
                                 )}
-                            </div>
-                        </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-zinc-400">Email <span className="text-red-500">*</span></label>
-                                <input
-                                    type="email"
-                                    value={data.personalInfo.email}
-                                    onChange={(e) => updatePersonalInfo({ email: e.target.value })}
-                                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                                    placeholder="your.email@example.com"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-zinc-400">Phone <span className="text-red-500">*</span></label>
-                                <div className="flex bg-white/5 border border-white/10 rounded-lg focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 overflow-hidden">
-                                    <select
-                                        className="bg-transparent text-white px-2 py-2.5 border-r border-white/10 focus:outline-none cursor-pointer text-sm w-[100px]"
-                                        onChange={(e) => {
-                                            const currentPhone = (data.personalInfo.phone || '').replace(/^\+\d+\s*/, '');
-                                            updatePersonalInfo({ phone: `${e.target.value} ${currentPhone}`.trim() });
-                                        }}
-                                        value={(data.personalInfo.phone || '').match(/^\+\d+/)?.[0] || '+91'}
+                                {activeTab === 'ai' && (
+                                    <motion.div
+                                        key="ai"
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="p-10 space-y-10"
                                     >
-                                        {countryCodes.map((c) => (
-                                            <option key={c.code} value={c.code} className="bg-zinc-900 text-white">
-                                                {c.flag} {c.code} ({c.country})
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <input
-                                        type="tel"
-                                        value={(data.personalInfo.phone || '').replace(/^\+\d+\s*/, '')}
-                                        onChange={(e) => {
-                                            const currentCode = (data.personalInfo.phone || '').match(/^\+\d+/)?.[0] || '+91';
-                                            updatePersonalInfo({ phone: `${currentCode} ${e.target.value}`.trim() });
-                                        }}
-                                        className="w-full bg-transparent px-3 py-2.5 text-white placeholder-zinc-500 focus:outline-none"
-                                        placeholder="12345 67890"
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                                        <div className="p-8 rounded-[2.5rem] bg-indigo-500/5 border border-indigo-500/10 relative overflow-hidden group">
+                                            <div className="absolute top-0 right-0 h-24 w-24 bg-indigo-500/10 blur-[50px] rounded-full" />
+                                            <p className="text-[11px] text-zinc-500 leading-relaxed font-bold uppercase tracking-widest relative z-10">
+                                                Our <span className="text-indigo-400">AI Assistant</span> is ready. Select text in your resume to improve it, or use the features below.
+                                            </p>
+                                        </div>
 
-                        <div className="space-y-2 mt-6">
-                            <div className="flex justify-between items-end">
-                                <label className="text-sm font-medium text-zinc-400">Professional Summary</label>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => handleEnhance('summary', data.personalInfo.jobTitle, 'generate')}
-                                        disabled={isEnhancing === 'generate-summary-' || !data.personalInfo.jobTitle.trim()}
-                                        className="flex items-center gap-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors bg-emerald-500/10 hover:bg-emerald-500/20 px-3 py-1.5 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <Sparkles className={`h-3.5 w-3.5 ${isEnhancing === 'generate-summary-' ? 'animate-pulse' : ''}`} />
-                                        {isEnhancing === 'generate-summary-' ? 'Generating...' : 'AI'}
-                                    </button>
-                                    <button
-                                        onClick={() => handleEnhance('summary', data.personalInfo.summary, 'enhance')}
-                                        disabled={isEnhancing === 'enhance-summary-' || !data.personalInfo.summary.trim()}
-                                        className="flex items-center gap-1.5 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <Bot className={`h-3.5 w-3.5 ${isEnhancing === 'enhance-summary-' ? 'animate-pulse' : ''}`} />
-                                        {isEnhancing === 'enhance-summary-' ? 'Enhancing...' : 'Enhance AI'}
-                                    </button>
-                                </div>
-                            </div>
-                            <textarea
-                                value={data.personalInfo.summary}
-                                onChange={(e) => updatePersonalInfo({ summary: e.target.value })}
-                                rows={4}
-                                className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none"
-                                placeholder="Briefly describe your... "
-                            />
-                        </div>
-                    </div>
-                )}
-
-                {currentStep === 1 && (
-                    <div className="space-y-6 text-zinc-300">
-                        {data.experience.map((exp, idx) => (
-                            <div key={exp.id || idx} className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-4">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="font-semibold text-white">Experience {idx + 1}</h3>
-                                    <button onClick={() => useResumeStore.getState().removeExperience(exp.id)} className="text-red-400 hover:text-red-300 text-sm">Remove</button>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-zinc-400">Company</label>
-                                        <input type="text" value={exp.company} onChange={(e) => useResumeStore.getState().updateExperience(exp.id, { company: e.target.value })} className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Company Name" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-zinc-400">Position</label>
-                                        <input type="text" value={exp.position} onChange={(e) => useResumeStore.getState().updateExperience(exp.id, { position: e.target.value })} className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Position Title" />
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-zinc-400">Start Date</label>
-                                        <input type="text" value={exp.startDate} onChange={(e) => useResumeStore.getState().updateExperience(exp.id, { startDate: e.target.value })} className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Month YYYY" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-zinc-400">End Date</label>
-                                        <input type="text" value={exp.endDate} onChange={(e) => useResumeStore.getState().updateExperience(exp.id, { endDate: e.target.value })} disabled={exp.current} className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:opacity-50" placeholder="Month YYYY or Present" />
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <input type="checkbox" checked={exp.current} onChange={(e) => useResumeStore.getState().updateExperience(exp.id, { current: e.target.checked })} id={`current-${exp.id}`} className="rounded border-white/10 bg-black/50 text-indigo-500 focus:ring-indigo-500" />
-                                    <label htmlFor={`current-${exp.id}`} className="text-sm">I currently work here</label>
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-end">
-                                        <label className="text-sm font-medium text-zinc-400">Description / Achievements</label>
-                                        <div className="flex gap-2">
+                                        <div className="space-y-6">
+                                            <h3 className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-600 px-2 italic">AI Capabilities</h3>
                                             <button
-                                                onClick={() => handleEnhance('experience', '', 'generate', exp.id, { position: exp.position, company: exp.company })}
-                                                disabled={isEnhancing === 'generate-experience-' + exp.id || !exp.position.trim()}
-                                                className="flex items-center gap-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors bg-emerald-500/10 hover:bg-emerald-500/20 px-3 py-1.5 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+                                                onClick={() => handleEnhance('summary', data.personalInfo.jobTitle, 'generate')}
+                                                disabled={isEnhancing === 'generate-summary-' || !data.personalInfo.jobTitle.trim()}
+                                                className="w-full group relative flex items-center justify-between p-6 rounded-[2rem] bg-white/[0.03] border border-white/5 hover:border-indigo-500/30 transition-all text-left overflow-hidden"
                                             >
-                                                <Sparkles className={`h-3.5 w-3.5 ${isEnhancing === 'generate-experience-' + exp.id ? 'animate-pulse' : ''}`} />
-                                                {isEnhancing === 'generate-experience-' + exp.id ? 'Generating...' : 'AI'}
+                                                <div className="flex flex-col gap-2 relative z-10">
+                                                    <span className="text-xs font-black uppercase tracking-widest text-white">Draft Executive Summary</span>
+                                                    <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest leading-relaxed">Tailor to specific Job Title</span>
+                                                </div>
+                                                <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center group-hover:bg-indigo-500/20 transition-all border border-indigo-500/20 text-indigo-400">
+                                                    <Sparkles className="h-5 w-5" />
+                                                </div>
                                             </button>
+
                                             <button
-                                                onClick={() => handleEnhance('experience', exp.description, 'enhance', exp.id, { position: exp.position, company: exp.company })}
-                                                disabled={isEnhancing === 'enhance-experience-' + exp.id || !exp.description.trim()}
-                                                className="flex items-center gap-1.5 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+                                                onClick={() => handleEnhance('skills', data.personalInfo.jobTitle, 'generate')}
+                                                disabled={isEnhancing === 'generate-skills-' || !data.personalInfo.jobTitle.trim()}
+                                                className="w-full group relative flex items-center justify-between p-6 rounded-[2rem] bg-white/[0.03] border border-white/5 hover:border-emerald-500/30 transition-all text-left overflow-hidden"
                                             >
-                                                <Bot className={`h-3.5 w-3.5 ${isEnhancing === 'enhance-experience-' + exp.id ? 'animate-pulse' : ''}`} />
-                                                {isEnhancing === 'enhance-experience-' + exp.id ? 'Enhancing...' : 'Enhance AI'}
+                                                <div className="flex flex-col gap-2 relative z-10">
+                                                    <span className="text-xs font-black uppercase tracking-widest text-white">Generate Core Stack</span>
+                                                    <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest leading-relaxed">Industry standard formatting</span>
+                                                </div>
+                                                <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20 transition-all border border-emerald-500/20 text-emerald-400">
+                                                    <Zap className="h-5 w-5" />
+                                                </div>
                                             </button>
                                         </div>
-                                    </div>
-                                    <textarea value={exp.description} onChange={(e) => useResumeStore.getState().updateExperience(exp.id, { description: e.target.value })} rows={4} className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none" placeholder="Describe your achievements and responsibilities..." />
-                                </div>
-                            </div>
-                        ))}
-                        <button
-                            onClick={() => useResumeStore.getState().addExperience({ id: Date.now().toString(), company: '', position: '', startDate: '', endDate: '', current: false, description: '' })}
-                            className="w-full py-3 border border-dashed border-white/20 rounded-lg text-indigo-400 hover:bg-white/5 transition-colors font-medium flex justify-center items-center gap-2"
-                        >
-                            + Add Experience
-                        </button>
-                    </div>
-                )}
 
-                {currentStep === 2 && (
-                    <div className="space-y-6 text-zinc-300">
-                        {data.education.map((edu, idx) => (
-                            <div key={edu.id || idx} className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-4">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="font-semibold text-white">Education {idx + 1}</h3>
-                                    <button onClick={() => useResumeStore.getState().removeEducation(edu.id)} className="text-red-400 hover:text-red-300 text-sm">Remove</button>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-zinc-400">School / University <span className="text-red-500">*</span></label>
-                                        <input type="text" value={edu.school} onChange={(e) => useResumeStore.getState().updateEducation(edu.id, { school: e.target.value })} className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="University or College Name" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-zinc-400">Degree & Field <span className="text-red-500">*</span></label>
-                                        <input type="text" value={edu.degree} onChange={(e) => useResumeStore.getState().updateEducation(edu.id, { degree: e.target.value })} className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Your Degree" />
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-zinc-400">Start Date</label>
-                                        <input type="text" value={edu.startDate} onChange={(e) => useResumeStore.getState().updateEducation(edu.id, { startDate: e.target.value })} className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Month YYYY" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-zinc-400">End Date</label>
-                                        <input type="text" value={edu.endDate} onChange={(e) => useResumeStore.getState().updateEducation(edu.id, { endDate: e.target.value })} className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white placeholder-zinc-600 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Month YYYY" />
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                        <button
-                            onClick={() => useResumeStore.getState().addEducation({ id: Date.now().toString(), school: '', degree: '', startDate: '', endDate: '' })}
-                            className="w-full py-3 border border-dashed border-white/20 rounded-lg text-indigo-400 hover:bg-white/5 transition-colors font-medium flex justify-center items-center gap-2"
-                        >
-                            + Add Education
-                        </button>
-                    </div>
-                )}
+                                        {!activeField && (
+                                            <div className="p-8 rounded-[2rem] border border-dashed border-white/5 text-center bg-white/[0.01]">
+                                                <div className="h-12 w-12 mx-auto rounded-full bg-white/5 flex items-center justify-center mb-6">
+                                                    <MousePointer2 className="h-5 w-5 text-zinc-700" />
+                                                </div>
+                                                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-700 leading-relaxed">
+                                                    Select text <br /> on resume to <br /> enable AI features
+                                                </span>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
 
-                {currentStep === 3 && (
-                    <div className="space-y-6 text-zinc-300">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-zinc-400">Key Skills (comma separated) <span className="text-red-500">*</span></label>
-                            <textarea
-                                value={data.skills}
-                                onChange={(e) => useResumeStore.getState().updateSkills(e.target.value)}
-                                rows={3}
-                                className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none"
-                                placeholder="JavaScript, React, Node.js, Python, AWS..."
-                            />
+                                {activeTab === 'coach' && (
+                                    <motion.div
+                                        key="coach"
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        className="p-8 space-y-8 h-full flex flex-col"
+                                    >
+                                        {!coachFeedback ? (
+                                            <div className="flex-1 flex flex-col items-center justify-center text-center space-y-8 p-6">
+                                                <div className="relative">
+                                                    <div className="absolute inset-0 bg-indigo-500/20 blur-[40px] rounded-full animate-pulse" />
+                                                    <div className="relative h-24 w-24 rounded-[2rem] bg-[#0A0A0A] border border-indigo-500/30 flex items-center justify-center shadow-2xl">
+                                                        <ShieldCheck className="h-10 w-10 text-indigo-400" />
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-4 max-w-xs">
+                                                    <h3 className="text-2xl font-black text-white uppercase tracking-tighter font-display">Resume <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400">Analysis</span></h3>
+                                                    <p className="text-[10px] text-zinc-500 leading-relaxed font-bold uppercase tracking-widest px-4">
+                                                        Get expert feedback from our AI performance coach to optimize your resume for 2026 hiring standards.
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    onClick={handleCoachAnalyze}
+                                                    disabled={isAnalyzing}
+                                                    className="w-full relative group bg-white text-zinc-950 font-black uppercase tracking-[0.4em] text-[10px] py-6 rounded-2xl transition-all hover:scale-[1.02] active:scale-95 shadow-[0_20px_40px_rgba(255,255,255,0.1)] block"
+                                                >
+                                                    {isAnalyzing ? (
+                                                        <div className="flex items-center justify-center gap-3">
+                                                            <div className="h-1.5 w-1.5 bg-zinc-950 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                                                            <div className="h-1.5 w-1.5 bg-zinc-950 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                                                            <div className="h-1.5 w-1.5 bg-zinc-950 rounded-full animate-bounce" />
+                                                        </div>
+                                                    ) : (
+                                                        "Analyze My Resume"
+                                                    )}
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-8 animate-fadeIn pb-12">
+                                                {/* Score Card */}
+                                                <div className="relative p-8 rounded-[2.5rem] bg-indigo-500/5 border border-indigo-500/10 overflow-hidden text-center group">
+                                                    <div className="absolute top-0 right-0 h-32 w-32 bg-indigo-500/10 blur-[60px] rounded-full -translate-y-12 translate-x-12" />
+                                                    <div className="relative z-10 flex flex-col items-center">
+                                                        <div className="h-20 w-20 rounded-full bg-indigo-500/10 border-2 border-indigo-500/20 flex items-center justify-center mb-4 shadow-inner">
+                                                            <span className="text-3xl font-black text-white font-display leading-none">{coachFeedback.score}</span>
+                                                            <span className="text-[10px] text-zinc-500 ml-0.5 mt-2">/10</span>
+                                                        </div>
+                                                        <p className="text-[10px] text-indigo-400 font-black uppercase tracking-[0.3em] mb-2">Expert Verdict</p>
+                                                        <p className="text-xs text-white leading-relaxed font-medium italic">
+                                                            "{coachFeedback.verdict}"
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 gap-6">
+                                                    {/* Strengths */}
+                                                    <div className="space-y-4">
+                                                        <div className="flex items-center gap-3 px-2">
+                                                            <CheckCircle2 className="h-3 w-3 text-emerald-400" />
+                                                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-500/80">Key Strengths</span>
+                                                        </div>
+                                                        <div className="space-y-3">
+                                                            {coachFeedback.strengths.map((s, i) => (
+                                                                <div key={i} className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 text-[10px] text-zinc-300 font-medium leading-relaxed">
+                                                                    {s}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Critical Issues */}
+                                                    <div className="space-y-4">
+                                                        <div className="flex items-center gap-3 px-2">
+                                                            <AlertCircle className="h-3 w-3 text-rose-400" />
+                                                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-rose-500/80">Critical Issues</span>
+                                                        </div>
+                                                        <div className="space-y-3">
+                                                            {coachFeedback.issues.map((issue, i) => (
+                                                                <div key={i} className="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/10 text-[10px] text-zinc-300 font-medium leading-relaxed flex gap-3">
+                                                                    <div className="h-1.5 w-1.5 rounded-full bg-rose-500 mt-1 shrink-0 shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
+                                                                    {issue}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Bullet Point Rewrites */}
+                                                    <div className="space-y-4">
+                                                        <div className="flex items-center gap-3 px-2">
+                                                            <Zap className="h-3 w-3 text-indigo-400" />
+                                                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-indigo-500/80">Power Rewrites (CAR Model)</span>
+                                                        </div>
+                                                        <div className="space-y-3">
+                                                            {coachFeedback.rewrites.map((r, i) => (
+                                                                <div key={i} className="p-5 rounded-2xl bg-white/[0.03] border border-white/5 text-[10px] text-zinc-300 font-medium leading-relaxed italic relative">
+                                                                     <div className="absolute top-4 left-0 w-1 h-8 bg-indigo-500 rounded-r-full" />
+                                                                     {r}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Missing Keywords */}
+                                                    <div className="space-y-4">
+                                                        <div className="flex items-center gap-3 px-2">
+                                                            <Sparkles className="h-3 w-3 text-violet-400" />
+                                                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-violet-500/80">Missing ATS Keywords</span>
+                                                        </div>
+                                                        <div className="flex flex-wrap gap-2 px-2">
+                                                            {coachFeedback.keywords.map((kw, i) => (
+                                                                <span key={i} className="px-3 py-1.5 rounded-lg bg-violet-500/10 border border-violet-500/20 text-[8px] font-black uppercase tracking-widest text-violet-300">
+                                                                    {kw}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Recommendation */}
+                                                    <div className="pt-6">
+                                                        <div className="p-6 rounded-[2.5rem] bg-white text-zinc-950 shadow-2xl relative overflow-hidden">
+                                                            <div className="absolute top-0 right-0 h-16 w-16 bg-zinc-200 blur-2xl rounded-full translate-x-4 -translate-y-4" />
+                                                            <div className="flex items-center gap-4 mb-4 relative z-10">
+                                                                <div className="h-8 w-8 rounded-full bg-zinc-950 flex items-center justify-center text-white">
+                                                                    <ArrowRight size={14} />
+                                                                </div>
+                                                                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-400">Next Priority</span>
+                                                            </div>
+                                                            <p className="text-xs font-black uppercase tracking-tight leading-relaxed relative z-10 italic">
+                                                                {coachFeedback.recommendation}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    <button
+                                                        onClick={() => setCoachFeedback(undefined)}
+                                                        className="w-full text-zinc-600 hover:text-white transition-colors text-[8px] font-black uppercase tracking-[0.5em] py-8"
+                                                    >
+                                                        Refresh Analysis
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-zinc-400">Projects</label>
-                            <textarea
-                                value={data.projects}
-                                onChange={(e) => useResumeStore.getState().updateProjects(e.target.value)}
-                                rows={6}
-                                className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none"
-                                placeholder="Project Name - Description of what you built and the impact it had..."
-                            />
-                        </div>
-                    </div>
+                    </motion.div>
                 )}
-            </div>
-
-            {/* Navigation Footer */}
-            <div className="flex items-center justify-between border-t border-white/10 px-6 py-4 bg-transparent z-10 w-full mb-16 lg:mb-0">
-                <button
-                    onClick={prevStep}
-                    disabled={currentStep === 0}
-                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white disabled:text-zinc-600 transition-colors"
-                >
-                    <ChevronLeft className="h-4 w-4" /> Back
-                </button>
-                {currentStep < steps.length - 1 ? (
-                    <button
-                        onClick={nextStep}
-                        className="flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-2 text-sm font-medium text-white transition-all hover:bg-indigo-500 hover:scale-[1.02] shadow-[0_0_15px_-3px_rgba(99,102,241,0.5)] active:scale-95"
-                    >
-                        Next Step <ChevronRight className="h-4 w-4" />
-                    </button>
-                ) : (
-                    <div className="flex items-center gap-2">
-                        <div className="text-xs font-medium text-emerald-400 animate-pulse hidden sm:block mr-2 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]">All steps completed!</div>
-                    </div>
-                )}
-            </div>
+            </AnimatePresence>
         </div>
     );
 }

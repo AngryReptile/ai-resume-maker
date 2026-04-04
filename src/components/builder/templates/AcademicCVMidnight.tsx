@@ -1,9 +1,9 @@
 import { useResumeStore } from '@/store/useResumeStore';
-import { GripVertical, Plus, Trash2 } from 'lucide-react';
 import EditableText from '@/components/builder/EditableText';
 import { Reorder, useDragControls } from 'framer-motion';
+import { GripVertical, Plus, Trash2 } from 'lucide-react';
 
-export default function ClassicCentered({ previewData }: { previewData?: import("@/store/useResumeStore").ResumeData }) {
+export default function AcademicCVMidnight({ previewData }: { previewData?: import("@/store/useResumeStore").ResumeData }) {
     const storeData = useResumeStore((state) => state.data);
     const updateField = useResumeStore((state) => state.updateField);
     const visibleSections = useResumeStore((state) => state.visibleSections);
@@ -18,25 +18,24 @@ export default function ClassicCentered({ previewData }: { previewData?: import(
     // Filter section order to ensure Reorder.Group only sees what it manages
     const visibleSectionOrder = sectionOrder.filter(id => visibleSections.includes(id));
 
-    const renderCustomSection = (id: string, isSidebar: boolean = false) => {
+    const renderCustomSection = (id: string) => {
         const section = customSections.find(s => s.id === id);
         if (!section) return null;
 
         return (
-            <Reorder.Item key={id} value={id} dragListener={false} dragControls={dragControls} className="group/section relative py-4 text-center paged-block">
+            <Reorder.Item key={id} value={id} dragListener={false} dragControls={dragControls} className="group/section relative py-4 paged-block">
                  <div className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2" onPointerDown={(e) => dragControls.start(e)}>
-                    <GripVertical className="h-4 w-4 text-zinc-300" />
+                    <GripVertical className="h-4 w-4 text-sky-300" />
                 </div>
-                <h2 className="text-center text-lg font-bold uppercase tracking-widest text-zinc-900 mb-4">
+                <h2 className="text-sm font-bold uppercase border-b border-sky-900 pb-1 mb-4">
                     {sectionLabels[id] || section.title}
                 </h2>
-                <div className="w-16 h-px bg-zinc-800 mx-auto mb-6"></div>
                 <EditableText
                     value={section.content}
                     onSave={(val) => updateCustomSection(id, { content: val })}
                     placeholder="Enter content..."
                     multiline
-                    className="text-center text-zinc-800 leading-relaxed max-w-2xl mx-auto"
+                    className="text-[11pt] leading-relaxed text-justify"
                 />
             </Reorder.Item>
         );
@@ -45,19 +44,18 @@ export default function ClassicCentered({ previewData }: { previewData?: import(
     const renderSummary = () => (
         <Reorder.Item key="summary" value="summary" dragListener={false} dragControls={dragControls} className="group/section relative py-4 paged-block">
              <div className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2" onPointerDown={(e) => dragControls.start(e)}>
-                <GripVertical className="h-4 w-4 text-zinc-300" />
+                <GripVertical className="h-4 w-4 text-sky-300" />
             </div>
-            <h2 className="text-center text-lg font-bold uppercase tracking-widest text-zinc-900 mb-4">
+            <h2 className="text-sm font-bold uppercase border-b border-sky-900 pb-1 mb-4">
                 {sectionLabels.summary}
             </h2>
-            <div className="w-16 h-px bg-zinc-800 mx-auto mb-6"></div>
             <EditableText
                 value={data.personalInfo.summary}
                 onSave={(val) => updateField('personalInfo', 'summary', val)}
-                placeholder="Professional summary..."
+                placeholder="Briefly describe your academic focus and research interests..."
                 multiline
                 label="summary"
-                className="text-center text-zinc-800 leading-relaxed max-w-2xl mx-auto"
+                className="text-[11pt] leading-relaxed text-justify"
             />
         </Reorder.Item>
     );
@@ -65,102 +63,98 @@ export default function ClassicCentered({ previewData }: { previewData?: import(
     const renderExperience = () => (
         <Reorder.Item key="experience" value="experience" dragListener={false} dragControls={dragControls} className="group/section relative py-4 paged-block">
              <div className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2" onPointerDown={(e) => dragControls.start(e)}>
-                <GripVertical className="h-4 w-4 text-zinc-300" />
+                <GripVertical className="h-4 w-4 text-sky-300" />
             </div>
-            <h2 className="text-center text-lg font-bold uppercase tracking-widest text-zinc-900 mb-4">
+            <h2 className="text-sm font-bold uppercase border-b border-sky-900 pb-1 mb-6">
                 {sectionLabels.experience}
             </h2>
-            <div className="w-16 h-px bg-zinc-800 mx-auto mb-6"></div>
-            <Reorder.Group axis="y" values={data.experience} onReorder={useResumeStore.getState().setExperienceOrder} className="space-y-6">
+            <Reorder.Group axis="y" values={data.experience} onReorder={useResumeStore.getState().setExperienceOrder} className="space-y-8">
                 {data.experience.map((exp) => (
                     <Reorder.Item key={exp.id} value={exp} className="relative group/exp paged-block">
                         <div className="absolute -right-10 top-0 opacity-0 group-hover/exp:opacity-100 transition-opacity z-20">
-                            <button onClick={() => useResumeStore.getState().removeExperience(exp.id)} className="p-1 text-zinc-300 hover:text-red-500 rounded border border-zinc-100 bg-white"><Trash2 className="h-4 w-4" /></button>
+                            <button onClick={() => useResumeStore.getState().removeExperience(exp.id)} className="p-1 text-sky-400 hover:text-red-500 rounded border border-sky-100 bg-slate-50"><Trash2 className="h-4 w-4" /></button>
                         </div>
-                        <div className="flex justify-between items-end border-b border-zinc-200 pb-1 mb-2">
-                            <EditableText value={exp.company} onSave={(val) => updateField('experience', 'company', val, exp.id)} placeholder="Company" className="font-bold text-lg text-zinc-900" />
-                            <div className="flex items-center gap-1 font-bold text-sm text-zinc-600">
+                        <div className="flex justify-between font-bold mb-1">
+                            <EditableText value={exp.company} onSave={(val) => updateField('experience', 'company', val, exp.id)} placeholder="Organization" className="text-base" />
+                            <div className="flex items-center gap-1 text-[11pt] font-normal">
                                 <EditableText value={exp.startDate} onSave={(val) => updateField('experience', 'startDate', val, exp.id)} placeholder="Start" />
                                 <span>–</span>
                                 <EditableText value={exp.current ? 'Present' : exp.endDate} onSave={(val) => updateField('experience', 'endDate', val, exp.id)} placeholder="End" />
                             </div>
                         </div>
-                        <EditableText value={exp.position} onSave={(val) => updateField('experience', 'position', val, exp.id)} placeholder="Position" className="font-bold text-zinc-700 italic mb-3 block" />
+                        <EditableText value={exp.position} onSave={(val) => updateField('experience', 'position', val, exp.id)} placeholder="Role Title" className="italic mb-2 block" />
                         <EditableText
                             value={exp.description}
                             onSave={(val) => updateField('experience', 'description', val, exp.id)}
-                            placeholder="Description..."
+                            placeholder="Research details, publications, or teaching responsibilities..."
                             multiline
                             label="experience"
-                            className="text-zinc-800 leading-relaxed"
+                            className="text-[11pt] leading-relaxed"
                         />
                     </Reorder.Item>
                 ))}
             </Reorder.Group>
-            <button onClick={() => useResumeStore.getState().addExperience()} className="mt-6 flex items-center justify-center gap-2 w-full py-2 border border-dashed border-zinc-200 text-xs font-bold text-zinc-400 hover:text-zinc-800 transition-all opacity-0 group-hover/section:opacity-100"><Plus className="h-4 w-4" /> Add Experience</button>
+            <button onClick={() => useResumeStore.getState().addExperience()} className="mt-8 flex items-center justify-center gap-2 w-full py-2 border border-dashed border-sky-200 text-xs font-bold text-sky-400 hover:text-sky-800 transition-all opacity-0 group-hover/section:opacity-100"><Plus className="h-4 w-4" /> Add Experience Entry</button>
         </Reorder.Item>
     );
 
     const renderEducation = () => (
         <Reorder.Item key="education" value="education" dragListener={false} dragControls={dragControls} className="group/section relative py-4 paged-block">
              <div className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2" onPointerDown={(e) => dragControls.start(e)}>
-                <GripVertical className="h-4 w-4 text-zinc-300" />
+                <GripVertical className="h-4 w-4 text-sky-300" />
             </div>
-            <h2 className="text-center text-lg font-bold uppercase tracking-widest text-zinc-900 mb-4">
+            <h2 className="text-sm font-bold uppercase border-b border-sky-900 pb-1 mb-6">
                 {sectionLabels.education}
             </h2>
-            <div className="w-16 h-px bg-zinc-800 mx-auto mb-6"></div>
-            <Reorder.Group axis="y" values={data.education} onReorder={useResumeStore.getState().setEducationOrder} className="space-y-4">
+            <Reorder.Group axis="y" values={data.education} onReorder={useResumeStore.getState().setEducationOrder} className="space-y-6">
                 {data.education.map((edu) => (
-                    <div key={edu.id} className="relative group/edu flex justify-between items-baseline paged-block">
-                         <div className="absolute -right-6 top-0 opacity-0 group-hover/edu:opacity-100 transition-opacity z-20">
-                            <button onClick={() => useResumeStore.getState().removeEducation(edu.id)} className="text-zinc-300 hover:text-red-400"><Trash2 className="h-3 w-3" /></button>
+                    <Reorder.Item key={edu.id} value={edu} className="relative group/edu">
+                         <div className="absolute -right-10 top-0 opacity-0 group-hover/edu:opacity-100 transition-opacity z-20">
+                            <button onClick={() => useResumeStore.getState().removeEducation(edu.id)} className="p-1 text-sky-400 hover:text-red-500 rounded border border-sky-100 bg-slate-50"><Trash2 className="h-4 w-4" /></button>
                         </div>
-                        <div className="flex items-baseline">
-                            <EditableText value={edu.school} onSave={(val) => updateField('education', 'school', val, edu.id)} placeholder="School" className="font-bold text-zinc-900" />
-                            <span className="mx-2 text-zinc-400">|</span>
-                            <EditableText value={edu.degree} onSave={(val) => updateField('education', 'degree', val, edu.id)} placeholder="Degree" className="italic text-zinc-700" />
+                        <div className="flex justify-between font-bold mb-1">
+                            <EditableText value={edu.school} onSave={(val) => updateField('education', 'school', val, edu.id)} placeholder="University" className="text-base" />
+                            <div className="flex items-center gap-1 text-[11pt] font-normal">
+                                <EditableText value={edu.startDate} onSave={(val) => updateField('education', 'startDate', val, edu.id)} placeholder="Start" />
+                                <span>–</span>
+                                <EditableText value={edu.endDate} onSave={(val) => updateField('education', 'endDate', val, edu.id)} placeholder="End" />
+                            </div>
                         </div>
-                        <div className="flex items-center gap-1 text-sm font-bold text-zinc-600">
-                             <EditableText value={edu.startDate} onSave={(val) => updateField('education', 'startDate', val, edu.id)} placeholder="Start" />
-                             <span>–</span>
-                             <EditableText value={edu.endDate} onSave={(val) => updateField('education', 'endDate', val, edu.id)} placeholder="End" />
-                        </div>
-                    </div>
+                        <EditableText value={edu.degree} onSave={(val) => updateField('education', 'degree', val, edu.id)} placeholder="Degree & Major" className="italic block" />
+                    </Reorder.Item>
                 ))}
             </Reorder.Group>
-            <button onClick={() => useResumeStore.getState().addEducation()} className="mt-4 text-[10px] font-bold text-zinc-400 hover:text-zinc-600 transition-colors uppercase">+ NEW ENTRY</button>
+            <button onClick={() => useResumeStore.getState().addEducation()} className="mt-6 flex items-center justify-center gap-2 w-full py-2 border border-dashed border-sky-200 text-xs font-bold text-sky-400 hover:text-sky-800 transition-all opacity-0 group-hover/section:opacity-100"><Plus className="h-4 w-4" /> Add Education Entry</button>
         </Reorder.Item>
     );
 
     const renderSkills = () => (
         <Reorder.Item key="skills" value="skills" dragListener={false} dragControls={dragControls} className="group/section relative py-4 paged-block">
              <div className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2" onPointerDown={(e) => dragControls.start(e)}>
-                <GripVertical className="h-4 w-4 text-zinc-300" />
+                <GripVertical className="h-4 w-4 text-sky-300" />
             </div>
-            <h2 className="text-center text-lg font-bold uppercase tracking-widest text-zinc-900 mb-4">
+            <h2 className="text-sm font-bold uppercase border-b border-sky-900 pb-1 mb-4 text-left">
                 {sectionLabels.skills}
             </h2>
-            <div className="w-16 h-px bg-zinc-800 mx-auto mb-6"></div>
             
-            <Reorder.Group axis="y" values={data.skills} onReorder={useResumeStore.getState().setSkillOrder} className="flex flex-wrap justify-center gap-x-6 gap-y-2 max-w-2xl mx-auto">
+            <Reorder.Group axis="y" values={data.skills} onReorder={useResumeStore.getState().setSkillOrder} className="space-y-2">
                 {data.skills.map((skill) => (
                     <Reorder.Item 
                         key={skill.id} 
                         value={skill} 
-                        className="relative group/skill flex items-center gap-2 paged-block cursor-default"
+                        className="relative group/skill flex items-center justify-between paged-block"
                     >
                         <EditableText
                             value={skill.name}
                             onSave={(val) => updateField('skills', 'name', val, skill.id)}
                             placeholder="Skill"
-                            className="text-center text-zinc-800 font-bold uppercase tracking-wide text-sm"
+                            className="text-[11pt] leading-relaxed"
                         />
                         <button 
                             onClick={() => useResumeStore.getState().removeSkill(skill.id)}
                             className="opacity-0 group-hover/skill:opacity-100 transition-opacity"
                         >
-                            <Trash2 className="h-3 w-3 text-zinc-300 hover:text-red-500" />
+                            <Trash2 className="h-4 w-4 text-sky-300 hover:text-red-500" />
                         </button>
                     </Reorder.Item>
                 ))}
@@ -168,9 +162,9 @@ export default function ClassicCentered({ previewData }: { previewData?: import(
 
             <button 
                 onClick={() => useResumeStore.getState().addSkill()}
-                className="mt-6 mx-auto flex items-center justify-center h-8 w-8 rounded-full border border-dashed border-zinc-200 text-zinc-300 hover:text-zinc-600 hover:border-zinc-400 transition-all"
+                className="mt-4 flex items-center justify-center gap-2 w-full py-1 border border-dashed border-sky-100 text-[10px] font-bold text-sky-400 hover:text-sky-800 transition-all opacity-0 group-hover/section:opacity-100"
             >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-3 w-3" /> Add Skill Entry
             </button>
         </Reorder.Item>
     );
@@ -178,24 +172,23 @@ export default function ClassicCentered({ previewData }: { previewData?: import(
     const renderProjects = () => (
         <Reorder.Item key="projects" value="projects" dragListener={false} dragControls={dragControls} className="group/section relative py-4 paged-block">
              <div className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2" onPointerDown={(e) => dragControls.start(e)}>
-                <GripVertical className="h-4 w-4 text-zinc-300" />
+                <GripVertical className="h-4 w-4 text-sky-300" />
             </div>
-            <h2 className="text-center text-lg font-bold uppercase tracking-widest text-zinc-900 mb-4">
+            <h2 className="text-sm font-bold uppercase border-b border-sky-900 pb-1 mb-6">
                 {sectionLabels.projects}
             </h2>
-            <div className="w-16 h-px bg-zinc-800 mx-auto mb-6"></div>
             
-            <Reorder.Group axis="y" values={data.projects} onReorder={useResumeStore.getState().setProjectOrder} className="space-y-8 text-left">
+            <Reorder.Group axis="y" values={data.projects} onReorder={useResumeStore.getState().setProjectOrder} className="space-y-8">
                 {data.projects.map((proj) => (
                     <Reorder.Item 
                         key={proj.id} 
                         value={proj} 
                         className="relative group/proj paged-block"
                     >
-                        <div className="absolute -right-10 top-0 opacity-0 group-hover/proj:opacity-100 transition-opacity z-20 text-center">
+                        <div className="absolute -right-10 top-0 opacity-0 group-hover/proj:opacity-100 transition-opacity z-20">
                             <button
                                 onClick={() => useResumeStore.getState().removeProject(proj.id)}
-                                className="p-1 text-zinc-300 hover:text-red-500 rounded border border-zinc-100 bg-white"
+                                className="p-1 text-sky-400 hover:text-red-500 rounded border border-sky-100 bg-slate-50"
                             >
                                 <Trash2 className="h-4 w-4" />
                             </button>
@@ -203,15 +196,15 @@ export default function ClassicCentered({ previewData }: { previewData?: import(
                         <EditableText
                             value={proj.title}
                             onSave={(val) => updateField('projects', 'title', val, proj.id)}
-                            placeholder="Project Title"
-                            className="font-bold text-lg text-zinc-900 border-b border-zinc-200 pb-1 mb-2 block"
+                            placeholder="Project or Publication Title"
+                            className="text-[11pt] font-bold mb-1 block"
                         />
                         <EditableText
                             value={proj.content}
                             onSave={(val) => updateField('projects', 'content', val, proj.id)}
-                            placeholder="Projects..."
+                            placeholder="Details of publications, conferences, or specialized projects..."
                             multiline
-                            className="text-zinc-800 leading-relaxed"
+                            className="text-[11pt] leading-relaxed text-justify"
                         />
                     </Reorder.Item>
                 ))}
@@ -219,35 +212,37 @@ export default function ClassicCentered({ previewData }: { previewData?: import(
 
             <button 
                 onClick={() => useResumeStore.getState().addProject()}
-                className="mt-6 flex items-center justify-center gap-2 w-full py-2 border border-dashed border-zinc-200 text-xs font-bold text-zinc-400 hover:text-zinc-800 transition-all opacity-0 group-hover/section:opacity-100"
+                className="mt-8 flex items-center justify-center gap-2 w-full py-2 border border-dashed border-sky-200 text-xs font-bold text-sky-400 hover:text-sky-800 transition-all opacity-0 group-hover/section:opacity-100"
             >
-                <Plus className="h-4 w-4" /> Add Project
+                <Plus className="h-4 w-4" /> Add Project/Publication Entry
             </button>
         </Reorder.Item>
     );
 
     const renderLanguages = () => (
-        <Reorder.Item key="languages" value="languages" dragListener={false} dragControls={dragControls} className="group/section relative py-2 text-center paged-block">
-            <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-widest mb-2">{sectionLabels.languages}</h3>
-            <div className="w-8 h-px bg-zinc-400 mx-auto mb-3"></div>
+        <Reorder.Item key="languages" value="languages" dragListener={false} dragControls={dragControls} className="group/section relative py-4 paged-block">
+            <h2 className="text-sm font-bold uppercase border-b border-sky-900 pb-1 mb-4">
+                {sectionLabels.languages}
+            </h2>
             <EditableText
                 value={data.languages}
                 onSave={(val) => updateField('languages', 'content', val)}
-                placeholder="Languages..."
-                className="text-sm text-zinc-700 font-bold"
+                placeholder="Languages and proficiency..."
+                className="text-[11pt] leading-relaxed"
             />
         </Reorder.Item>
     );
 
     const renderInterests = () => (
-        <Reorder.Item key="interests" value="interests" dragListener={false} dragControls={dragControls} className="group/section relative py-2 text-center paged-block">
-            <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-widest mb-2">{sectionLabels.interests}</h3>
-            <div className="w-8 h-px bg-zinc-400 mx-auto mb-3"></div>
+        <Reorder.Item key="interests" value="interests" dragListener={false} dragControls={dragControls} className="group/section relative py-4 paged-block">
+            <h2 className="text-sm font-bold uppercase border-b border-sky-900 pb-1 mb-4">
+                {sectionLabels.interests}
+            </h2>
             <EditableText
                 value={data.interests}
                 onSave={(val) => updateField('interests', 'content', val)}
-                placeholder="Interests..."
-                className="text-sm text-zinc-700 font-bold"
+                placeholder="Personal interests..."
+                className="text-[11pt] leading-relaxed"
             />
         </Reorder.Item>
     );
@@ -262,42 +257,46 @@ export default function ClassicCentered({ previewData }: { previewData?: import(
         interests: renderInterests,
     };
 
-    const renderSection = (id: string, isSidebar: boolean = false) => {
-        if (id.startsWith('custom-')) return renderCustomSection(id, isSidebar);
+    const renderSection = (id: string) => {
+        if (id.startsWith('custom-')) return renderCustomSection(id);
         return sectionRenderers[id]?.();
     };
 
     return (
-        <div className="w-full bg-white text-zinc-900 p-12 font-serif text-[11pt] min-h-full">
+        <div className="w-full bg-slate-50 text-sky-950 p-16 sm:p-24 font-serif leading-relaxed shadow-inner">
             {/* Header */}
-            <div className="text-center mb-10 pb-6 border-b-2 border-zinc-800">
+            <header className="text-center mb-16">
                 <EditableText
                     value={data.personalInfo.fullName}
                     onSave={(val) => updateField('personalInfo', 'fullName', val)}
-                    placeholder="NAME"
-                    className="text-4xl font-bold tracking-tight text-zinc-900 mb-2 uppercase block"
+                    placeholder="FULL NAME"
+                    label="personalInfo"
+                    className="text-3xl font-bold uppercase tracking-widest mb-4"
                 />
-
-                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[10pt] text-zinc-700 mb-4">
+                
+                <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[11pt] font-medium text-sky-700">
                     <EditableText value={data.personalInfo.location} onSave={(val) => updateField('personalInfo', 'location', val)} placeholder="Location" />
-                    <span className="text-zinc-400">•</span>
-                    <EditableText value={data.personalInfo.phone} onSave={(val) => updateField('personalInfo', 'phone', val)} placeholder="Phone" />
-                    <span className="text-zinc-400">•</span>
+                    <span className="text-sky-300">•</span>
                     <EditableText value={data.personalInfo.email} onSave={(val) => updateField('personalInfo', 'email', val)} placeholder="Email" />
+                    <span className="text-sky-300">•</span>
+                    <EditableText value={data.personalInfo.phone} onSave={(val) => updateField('personalInfo', 'phone', val)} placeholder="Phone" />
+                    {data.personalInfo.website && (
+                        <>
+                            <span className="text-sky-300">•</span>
+                            <EditableText value={data.personalInfo.website} onSave={(val) => updateField('personalInfo', 'website', val)} placeholder="Website" />
+                        </>
+                    )}
                 </div>
-            </div>
+            </header>
 
-            {/* Core Content */}
-            <div className="space-y-8">
-                <Reorder.Group 
-                    axis="y" 
-                    values={visibleSectionOrder} 
-                    onReorder={(newOrder) => setSectionOrder([...newOrder, ...sectionOrder.filter(id => !visibleSections.includes(id))])}
-                    className="space-y-4"
-                >
-                    {visibleSectionOrder.map(id => renderSection(id))}
-                </Reorder.Group>
-            </div>
+            <Reorder.Group 
+                axis="y" 
+                values={visibleSectionOrder} 
+                onReorder={(newOrder) => setSectionOrder([...newOrder, ...sectionOrder.filter(id => !visibleSections.includes(id))])}
+                className="space-y-2"
+            >
+                {visibleSectionOrder.map(id => renderSection(id))}
+            </Reorder.Group>
         </div>
     );
 }

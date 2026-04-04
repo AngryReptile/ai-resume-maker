@@ -5,7 +5,7 @@ import { Reorder, useDragControls } from 'framer-motion';
 import EntryToolbar from '../EntryToolbar';
 import { useState } from 'react';
 
-export default function ModernClean({ previewData }: { previewData?: import("@/store/useResumeStore").ResumeData }) {
+export default function ModernCleanMidnight({ previewData }: { previewData?: import("@/store/useResumeStore").ResumeData }) {
     const storeData = useResumeStore((state) => state.data);
     const updateField = useResumeStore((state) => state.updateField);
     const visibleSections = useResumeStore((state) => state.visibleSections);
@@ -34,15 +34,15 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
                 value={id}
                 dragListener={false}
                 dragControls={dragControls}
-                className="mb-8 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200 paged-block"
+                className="mb-8 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200 paged-block"
             >
                 <div 
                     className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
                     onPointerDown={(e) => dragControls.start(e)}
                 >
-                    <GripVertical className="h-5 w-5 text-zinc-300" />
+                    <GripVertical className="h-5 w-5 text-sky-300" />
                 </div>
-                <h3 className="text-lg font-bold text-zinc-900 border-b-2 border-zinc-200 pb-2 mb-3 uppercase tracking-widest">
+                <h3 className="text-lg font-bold text-sky-900 border-b-2 border-sky-200 pb-2 mb-3 uppercase tracking-widest">
                     {sectionLabels[id] || section.title}
                 </h3>
                 <EditableText
@@ -50,7 +50,7 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
                     onSave={(val) => updateCustomSection(id, { content: val })}
                     placeholder="Enter content here..."
                     multiline
-                    className="text-base text-zinc-800 leading-relaxed"
+                    className="text-base text-sky-800 leading-relaxed"
                 />
             </Reorder.Item>
         );
@@ -62,15 +62,15 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
             value="experience"
             dragListener={false}
             dragControls={dragControls}
-            className="mb-8 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200 paged-block"
+            className="mb-8 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200 paged-block"
         >
             <div 
                 className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
                 onPointerDown={(e) => dragControls.start(e)}
             >
-                <GripVertical className="h-5 w-5 text-zinc-300" />
+                <GripVertical className="h-5 w-5 text-sky-300" />
             </div>
-            <h3 className="text-lg font-bold text-zinc-900 border-b-2 border-zinc-200 pb-2 mb-4 uppercase tracking-widest">
+            <h3 className="text-lg font-bold text-sky-900 border-b-2 border-sky-200 pb-2 mb-4 uppercase tracking-widest">
                 {sectionLabels.experience}
             </h3>
             
@@ -79,7 +79,7 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
                     <Reorder.Item 
                         key={exp.id} 
                         value={exp} 
-                        className="relative group/exp p-2 -mx-2 rounded hover:bg-white border border-transparent hover:border-zinc-100 hover:shadow-sm transition-all paged-block"
+                        className="relative group/exp p-2 -mx-2 rounded hover:bg-slate-50 border border-transparent hover:border-sky-100 hover:shadow-sm transition-all paged-block"
                         onMouseEnter={() => setHoveredEntry(exp.id)}
                         onMouseLeave={() => setHoveredEntry(null)}
                     >
@@ -97,9 +97,9 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
                                 onSave={(val) => updateField('experience', 'position', val, exp.id)}
                                 placeholder="Position Title"
                                 label="experience"
-                                className="text-lg font-bold text-zinc-900 flex-1"
+                                className="text-lg font-bold text-sky-900 flex-1"
                             />
-                            <div className="flex items-center gap-1 text-sm text-zinc-600 font-bold whitespace-nowrap ml-4">
+                            <div className="flex items-center gap-1 text-sm text-sky-600 font-bold whitespace-nowrap ml-4">
                                 <EditableText
                                     value={exp.startDate}
                                     onSave={(val) => updateField('experience', 'startDate', val, exp.id)}
@@ -118,7 +118,7 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
                             onSave={(val) => updateField('experience', 'company', val, exp.id)}
                             placeholder="Company Name"
                             label="experience"
-                            className="text-base text-indigo-700 font-semibold mb-2"
+                            className="text-base text-blue-700 font-semibold mb-2"
                         />
                         <EditableText
                             value={exp.description}
@@ -126,7 +126,7 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
                             placeholder="Describe your duties and impact..."
                             multiline
                             label="experience"
-                            className="text-base text-zinc-800 pl-4 border-l-2 border-zinc-300 leading-relaxed"
+                            className="text-base text-sky-800 pl-4 border-l-2 border-sky-300 leading-relaxed"
                         />
                     </Reorder.Item>
                 ))}
@@ -135,7 +135,7 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
             {/* Add Experience Button */}
             <button 
                 onClick={() => useResumeStore.getState().addExperience()}
-                className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 rounded-md border border-dashed border-zinc-200 text-sm font-bold text-zinc-400 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50/50 transition-all opacity-0 group-hover/section:opacity-100"
+                className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 rounded-md border border-dashed border-sky-200 text-sm font-bold text-sky-400 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50/50 transition-all opacity-0 group-hover/section:opacity-100"
             >
                 <Plus className="h-4 w-4" /> Add Experience
             </button>
@@ -148,15 +148,15 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
             value="education"
             dragListener={false}
             dragControls={dragControls}
-            className="mb-8 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200 paged-block"
+            className="mb-8 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200 paged-block"
         >
             <div 
                 className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
                 onPointerDown={(e) => dragControls.start(e)}
             >
-                <GripVertical className="h-5 w-5 text-zinc-300" />
+                <GripVertical className="h-5 w-5 text-sky-300" />
             </div>
-            <h3 className="text-lg font-bold text-zinc-900 border-b-2 border-zinc-200 pb-2 mb-4 uppercase tracking-widest">
+            <h3 className="text-lg font-bold text-sky-900 border-b-2 border-sky-200 pb-2 mb-4 uppercase tracking-widest">
                 {sectionLabels.education}
             </h3>
             
@@ -165,7 +165,7 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
                     <Reorder.Item 
                         key={edu.id} 
                         value={edu} 
-                        className="relative group/edu flex justify-between items-start p-2 -mx-2 rounded hover:bg-white border border-transparent hover:border-zinc-100 hover:shadow-sm transition-all paged-block"
+                        className="relative group/edu flex justify-between items-start p-2 -mx-2 rounded hover:bg-slate-50 border border-transparent hover:border-sky-100 hover:shadow-sm transition-all paged-block"
                         onMouseEnter={() => setHoveredEntry(edu.id)}
                         onMouseLeave={() => setHoveredEntry(null)}
                     >
@@ -180,17 +180,17 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
                                 onSave={(val) => updateField('education', 'school', val, edu.id)}
                                 placeholder="School Name"
                                 label="education"
-                                className="text-lg font-bold text-zinc-900"
+                                className="text-lg font-bold text-sky-900"
                             />
                             <EditableText
                                 value={edu.degree}
                                 onSave={(val) => updateField('education', 'degree', val, edu.id)}
                                 placeholder="Degree / Program"
                                 label="education"
-                                className="text-base text-zinc-700 font-medium mt-0.5"
+                                className="text-base text-sky-700 font-medium mt-0.5"
                             />
                         </div>
-                        <div className="flex items-center gap-1 text-sm text-zinc-600 font-bold whitespace-nowrap ml-4 mt-1">
+                        <div className="flex items-center gap-1 text-sm text-sky-600 font-bold whitespace-nowrap ml-4 mt-1">
                             <EditableText
                                 value={edu.startDate}
                                 onSave={(val) => updateField('education', 'startDate', val, edu.id)}
@@ -210,7 +210,7 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
             {/* Add Education Button */}
             <button 
                 onClick={() => useResumeStore.getState().addEducation()}
-                className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 rounded-md border border-dashed border-zinc-200 text-sm font-bold text-zinc-400 hover:text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all opacity-0 group-hover/section:opacity-100"
+                className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 rounded-md border border-dashed border-sky-200 text-sm font-bold text-sky-400 hover:text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all opacity-0 group-hover/section:opacity-100"
             >
                 <Plus className="h-4 w-4" /> Add Education
             </button>
@@ -223,38 +223,39 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
             value="skills"
             dragListener={false}
             dragControls={dragControls}
-            className="mb-8 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200 paged-block"
+            className="mb-8 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200"
         >
             <div 
                 className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
                 onPointerDown={(e) => dragControls.start(e)}
             >
-                <GripVertical className="h-5 w-5 text-zinc-300" />
+                <GripVertical className="h-5 w-5 text-sky-300" />
             </div>
-            <h3 className="text-lg font-bold text-zinc-900 border-b-2 border-zinc-200 pb-2 mb-3 uppercase tracking-widest">
+            <div className="absolute -right-2 -top-2 opacity-0 group-hover/section:opacity-100 transition-opacity bg-sky-900 text-white text-[8px] font-black uppercase tracking-tighter px-1.5 py-0.5 rounded shadow-xl pointer-events-none z-10">
+                Structure: Skills
+            </div>
+            <h3 className="text-lg font-bold text-sky-900 border-b-2 border-sky-200 pb-2 mb-3 uppercase tracking-widest">
                 {sectionLabels.skills}
             </h3>
             
-            <Reorder.Group axis="y" values={data.skills} onReorder={useResumeStore.getState().setSkillOrder} className="flex flex-wrap gap-2">
+            <Reorder.Group axis="y" values={data.skills} onReorder={useResumeStore.getState().setSkillOrder} className="space-y-4">
                 {data.skills.map((skill) => (
                     <Reorder.Item 
                         key={skill.id} 
                         value={skill} 
-                        className="relative group/skill px-3 py-1 bg-zinc-100 rounded-full flex items-center gap-2 hover:bg-zinc-200 transition-all paged-block"
-                        onMouseEnter={() => setHoveredEntry(skill.id)}
-                        onMouseLeave={() => setHoveredEntry(null)}
+                        className="relative group/skill flex items-center justify-between paged-block"
                     >
                         <EditableText
                             value={skill.name}
                             onSave={(val) => updateField('skills', 'name', val, skill.id)}
                             placeholder="Skill"
-                            className="text-sm font-bold text-zinc-800"
+                            className="text-base text-sky-800 leading-relaxed font-medium"
                         />
                         <button 
                             onClick={() => useResumeStore.getState().removeSkill(skill.id)}
                             className="opacity-0 group-hover/skill:opacity-100 transition-opacity"
                         >
-                            <Trash2 className="h-3 w-3 text-zinc-400 hover:text-red-500" />
+                            <Trash2 className="h-3 w-3 text-sky-300 hover:text-red-500" />
                         </button>
                     </Reorder.Item>
                 ))}
@@ -262,9 +263,9 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
 
             <button 
                 onClick={() => useResumeStore.getState().addSkill()}
-                className="mt-4 flex items-center justify-center gap-2 w-full py-1.5 rounded-md border border-dashed border-zinc-200 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50/50 transition-all opacity-0 group-hover/section:opacity-100"
+                className="mt-4 flex items-center justify-center gap-2 w-full py-1.5 rounded border border-dashed border-sky-200 text-[10px] font-bold text-sky-300 hover:text-blue-500 transition-all opacity-0 group-hover/section:opacity-100"
             >
-                <Plus className="h-3 w-3" /> Add Skill
+                <Plus className="h-3 w-3" /> ADD SKILL
             </button>
         </Reorder.Item>
     );
@@ -275,15 +276,18 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
             value="projects"
             dragListener={false}
             dragControls={dragControls}
-            className="mb-0 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200 paged-block"
+            className="mb-0 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200 paged-block"
         >
             <div 
                 className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
                 onPointerDown={(e) => dragControls.start(e)}
             >
-                <GripVertical className="h-5 w-5 text-zinc-300" />
+                <GripVertical className="h-5 w-5 text-sky-300" />
             </div>
-            <h3 className="text-lg font-bold text-zinc-900 border-b-2 border-zinc-200 pb-2 mb-4 uppercase tracking-widest">
+            <div className="absolute -right-2 -top-2 opacity-0 group-hover/section:opacity-100 transition-opacity bg-sky-900 text-white text-[8px] font-black uppercase tracking-tighter px-1.5 py-0.5 rounded shadow-xl pointer-events-none z-10">
+                Structure: Projects
+            </div>
+            <h3 className="text-lg font-bold text-sky-900 border-b-2 border-sky-200 pb-2 mb-3 uppercase tracking-widest">
                 {sectionLabels.projects}
             </h3>
             
@@ -292,27 +296,28 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
                     <Reorder.Item 
                         key={proj.id} 
                         value={proj} 
-                        className="relative group/proj p-2 -mx-2 rounded hover:bg-white border border-transparent hover:border-zinc-100 hover:shadow-sm transition-all paged-block"
-                        onMouseEnter={() => setHoveredEntry(proj.id)}
-                        onMouseLeave={() => setHoveredEntry(null)}
+                        className="relative group/proj p-2 -mx-2 rounded hover:bg-slate-50 border border-transparent hover:border-sky-100 hover:shadow-sm transition-all paged-block"
                     >
-                        <EntryToolbar 
-                            isVisible={hoveredEntry === proj.id}
-                            onDelete={() => useResumeStore.getState().removeProject(proj.id)}
-                        />
-                        
+                        <div className="absolute -right-10 top-0 opacity-0 group-hover/proj:opacity-100 transition-opacity z-20">
+                            <button
+                                onClick={() => useResumeStore.getState().removeProject(proj.id)}
+                                className="p-1 text-sky-300 hover:text-red-500 rounded border border-sky-100 bg-white"
+                            >
+                                <Trash2 className="h-4 w-4" />
+                            </button>
+                        </div>
                         <EditableText
                             value={proj.title}
                             onSave={(val) => updateField('projects', 'title', val, proj.id)}
                             placeholder="Project Title"
-                            className="text-lg font-bold text-zinc-900 mb-1"
+                            className="text-lg font-bold text-sky-900 mb-2 block"
                         />
                         <EditableText
                             value={proj.content}
                             onSave={(val) => updateField('projects', 'content', val, proj.id)}
-                            placeholder="Describe your project, tech stack, and achievements..."
+                            placeholder="Highlight your most impressive projects..."
                             multiline
-                            className="text-base text-zinc-800 border-l-2 border-zinc-200 pl-4 leading-relaxed"
+                            className="text-base text-sky-800 leading-relaxed"
                         />
                     </Reorder.Item>
                 ))}
@@ -320,7 +325,7 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
 
             <button 
                 onClick={() => useResumeStore.getState().addProject()}
-                className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 rounded-md border border-dashed border-zinc-200 text-sm font-bold text-zinc-400 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50/50 transition-all opacity-0 group-hover/section:opacity-100"
+                className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 rounded-md border border-dashed border-sky-200 text-sm font-bold text-sky-400 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50/50 transition-all opacity-0 group-hover/section:opacity-100"
             >
                 <Plus className="h-4 w-4" /> Add Project
             </button>
@@ -333,15 +338,15 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
             value="summary"
             dragListener={false}
             dragControls={dragControls}
-            className="mb-8 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200 paged-block"
+            className="mb-8 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200 paged-block"
         >
             <div 
                 className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
                 onPointerDown={(e) => dragControls.start(e)}
             >
-                <GripVertical className="h-5 w-5 text-zinc-300" />
+                <GripVertical className="h-5 w-5 text-sky-300" />
             </div>
-            <h3 className="text-lg font-bold text-zinc-900 border-b-2 border-zinc-200 pb-2 mb-3 uppercase tracking-widest">
+            <h3 className="text-lg font-bold text-sky-900 border-b-2 border-sky-200 pb-2 mb-3 uppercase tracking-widest">
                 {sectionLabels.summary}
             </h3>
             <EditableText
@@ -350,7 +355,7 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
                 placeholder="Briefly describe your professional background and key achievements..."
                 multiline
                 label="summary"
-                className="text-base leading-relaxed text-zinc-800"
+                className="text-base leading-relaxed text-sky-800"
             />
         </Reorder.Item>
     );
@@ -361,22 +366,22 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
             value="languages"
             dragListener={false}
             dragControls={dragControls}
-            className="mb-6 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200 paged-block"
+            className="mb-6 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200 paged-block"
         >
             <div 
                 className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
                 onPointerDown={(e) => dragControls.start(e)}
             >
-                <GripVertical className="h-5 w-5 text-zinc-300" />
+                <GripVertical className="h-5 w-5 text-sky-300" />
             </div>
-            <h3 className="text-lg font-bold text-zinc-900 border-b-2 border-zinc-200 pb-1 mb-2 uppercase tracking-widest">
+            <h3 className="text-lg font-bold text-sky-900 border-b-2 border-sky-200 pb-1 mb-2 uppercase tracking-widest">
                 {sectionLabels.languages}
             </h3>
             <EditableText
                 value={data.languages}
                 onSave={(val) => updateField('languages', 'content', val)}
                 placeholder="Languages you speak..."
-                className="text-sm text-zinc-700 font-medium"
+                className="text-sm text-sky-700 font-medium"
             />
         </Reorder.Item>
     );
@@ -387,22 +392,22 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
             value="interests"
             dragListener={false}
             dragControls={dragControls}
-            className="mb-0 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200 paged-block"
+            className="mb-0 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200 paged-block"
         >
             <div 
                 className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
                 onPointerDown={(e) => dragControls.start(e)}
             >
-                <GripVertical className="h-5 w-5 text-zinc-300" />
+                <GripVertical className="h-5 w-5 text-sky-300" />
             </div>
-            <h3 className="text-lg font-bold text-zinc-900 border-b-2 border-zinc-200 pb-1 mb-2 uppercase tracking-widest">
+            <h3 className="text-lg font-bold text-sky-900 border-b-2 border-sky-200 pb-1 mb-2 uppercase tracking-widest">
                 {sectionLabels.interests}
             </h3>
             <EditableText
                 value={data.interests}
                 onSave={(val) => updateField('interests', 'content', val)}
                 placeholder="Your hobbies..."
-                className="text-sm text-zinc-700"
+                className="text-sm text-sky-700"
             />
         </Reorder.Item>
     );
@@ -424,15 +429,15 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
 
 
     return (
-        <div className="w-full bg-white text-black p-10 sm:p-14 font-sans">
+        <div className="w-full bg-slate-50 text-black p-10 sm:p-14 font-sans">
             {/* Header */}
-            <div className="border-b-4 border-zinc-900 pb-6 mb-6">
+            <div className="border-b-4 border-sky-900 pb-6 mb-6">
                 <EditableText
                     value={data.personalInfo.fullName}
                     onSave={(val) => updateField('personalInfo', 'fullName', val)}
                     placeholder="Your Full Name"
                     label="personalInfo"
-                    className="text-4xl font-extrabold text-zinc-900 tracking-tight uppercase mb-2"
+                    className="text-4xl font-extrabold text-sky-900 tracking-tight uppercase mb-2"
                 />
                 
                 <EditableText
@@ -440,12 +445,12 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
                     onSave={(val) => updateField('personalInfo', 'jobTitle', val)}
                     placeholder="Target Job Title"
                     label="personalInfo"
-                    className="text-xl text-indigo-700 font-semibold mt-2 tracking-wide"
+                    className="text-xl text-blue-700 font-semibold mt-2 tracking-wide"
                 />
 
-                <div className="flex flex-wrap gap-x-6 gap-y-2 mt-6 text-sm text-zinc-700 font-medium">
+                <div className="flex flex-wrap gap-x-6 gap-y-2 mt-6 text-sm text-sky-700 font-medium">
                     <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-zinc-400" />
+                        <Mail className="h-4 w-4 text-sky-400" />
                         <EditableText
                             value={data.personalInfo.email}
                             onSave={(val) => updateField('personalInfo', 'email', val)}
@@ -453,7 +458,7 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
                         />
                     </div>
                     <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-zinc-400" />
+                        <Phone className="h-4 w-4 text-sky-400" />
                         <EditableText
                             value={data.personalInfo.phone}
                             onSave={(val) => updateField('personalInfo', 'phone', val)}
@@ -461,7 +466,7 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
                         />
                     </div>
                     <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-zinc-400" />
+                        <MapPin className="h-4 w-4 text-sky-400" />
                         <EditableText
                             value={data.personalInfo.location}
                             onSave={(val) => updateField('personalInfo', 'location', val)}
@@ -470,7 +475,7 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
                     </div>
                     {data.personalInfo.website && (
                         <div className="flex items-center gap-2">
-                            <Globe className="h-4 w-4 text-zinc-400" />
+                            <Globe className="h-4 w-4 text-sky-400" />
                             <EditableText
                                 value={data.personalInfo.website}
                                 onSave={(val) => updateField('personalInfo', 'website', val)}
@@ -497,7 +502,7 @@ export default function ModernClean({ previewData }: { previewData?: import("@/s
 
                 {/* Sidebar Column */}
                 {sidebarSections.length > 0 && (
-                    <div className="w-1/3 min-w-[200px] border-l border-zinc-100 pl-10">
+                    <div className="w-1/3 min-w-[200px] border-l border-sky-100 pl-10">
                         <Reorder.Group 
                             axis="y" 
                             values={sideSections} 

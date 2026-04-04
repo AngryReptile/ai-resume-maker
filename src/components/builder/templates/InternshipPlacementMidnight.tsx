@@ -5,7 +5,7 @@ import { Reorder, useDragControls } from 'framer-motion';
 import EntryToolbar from '../EntryToolbar';
 import { useState } from 'react';
 
-export default function InternshipPlacement({ previewData }: { previewData?: import("@/store/useResumeStore").ResumeData }) {
+export default function InternshipPlacementMidnight({ previewData }: { previewData?: import("@/store/useResumeStore").ResumeData }) {
     const storeData = useResumeStore((state) => state.data);
     const updateField = useResumeStore((state) => state.updateField);
     const visibleSections = useResumeStore((state) => state.visibleSections);
@@ -120,7 +120,7 @@ export default function InternshipPlacement({ previewData }: { previewData?: imp
                 {data.education.map((edu) => (
                     <Reorder.Item key={edu.id} value={edu} className="relative group/edu">
                          <div className="absolute -right-10 top-0 opacity-0 group-hover/edu:opacity-100 transition-opacity z-20">
-                            <button onClick={() => useResumeStore.getState().removeEducation(edu.id)} className="p-1 text-slate-300 hover:text-red-500 rounded border border-slate-100 bg-white"><Trash2 className="h-4 w-4" /></button>
+                            <button onClick={() => useResumeStore.getState().removeEducation(edu.id)} className="p-1 text-slate-300 hover:text-red-500 rounded border border-slate-100 bg-slate-50"><Trash2 className="h-4 w-4" /></button>
                         </div>
                         <div className="grid grid-cols-[1fr_auto] items-start">
                             <div>
@@ -269,7 +269,7 @@ export default function InternshipPlacement({ previewData }: { previewData?: imp
     };
 
     return (
-        <div className="w-full bg-white text-zinc-900 font-sans p-10 sm:p-16 min-h-full">
+        <div className="w-full bg-slate-50 text-sky-900 font-sans p-10 sm:p-16 min-h-full">
             {/* Header */}
             <header className="mb-12 border-b-2 border-slate-900 pb-8 text-center">
                 <EditableText

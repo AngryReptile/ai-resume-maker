@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin, Globe, GripVertical, Plus, Trash2, Terminal } from
 import EditableText from '@/components/builder/EditableText';
 import { Reorder, useDragControls } from 'framer-motion';
 
-export default function TechMinimal({ previewData }: { previewData?: import("@/store/useResumeStore").ResumeData }) {
+export default function TechMinimalMidnight({ previewData }: { previewData?: import("@/store/useResumeStore").ResumeData }) {
     const storeData = useResumeStore((state) => state.data);
     const updateField = useResumeStore((state) => state.updateField);
     const visibleSections = useResumeStore((state) => state.visibleSections);
@@ -44,7 +44,7 @@ export default function TechMinimal({ previewData }: { previewData?: import("@/s
                     onSave={(val) => updateCustomSection(id, { content: val })}
                     placeholder="Enter content here..."
                     multiline
-                    className="text-zinc-800 leading-relaxed font-mono"
+                    className="text-sky-800 leading-relaxed font-mono"
                 />
             </Reorder.Item>
         );
@@ -71,7 +71,7 @@ export default function TechMinimal({ previewData }: { previewData?: import("@/s
                 placeholder="Brief summary..."
                 multiline
                 label="summary"
-                className="text-zinc-800 leading-relaxed font-mono"
+                className="text-sky-800 leading-relaxed font-mono"
             />
         </Reorder.Item>
     );
@@ -102,29 +102,29 @@ export default function TechMinimal({ previewData }: { previewData?: import("@/s
                         <div className="absolute -right-10 top-0 opacity-0 group-hover/exp:opacity-100 transition-opacity z-20">
                             <button
                                 onClick={() => useResumeStore.getState().removeExperience(exp.id)}
-                                className="p-1 text-zinc-400 hover:text-red-500 bg-white border border-zinc-100"
+                                className="p-1 text-sky-400 hover:text-red-500 bg-slate-50 border border-sky-100"
                             >
                                 <Trash2 className="h-3 w-3" />
                             </button>
                         </div>
 
-                        <div className="flex justify-between items-start mb-2 border-b border-dashed border-zinc-300 pb-1">
+                        <div className="flex justify-between items-start mb-2 border-b border-dashed border-sky-300 pb-1">
                             <div className="flex-1 flex flex-wrap items-baseline gap-2">
                                 <EditableText
                                     value={exp.company}
                                     onSave={(val) => updateField('experience', 'company', val, exp.id)}
                                     placeholder="Company"
-                                    className="font-bold text-zinc-900"
+                                    className="font-bold text-sky-900"
                                 />
-                                <span className="text-zinc-400">@</span>
+                                <span className="text-sky-400">@</span>
                                 <EditableText
                                     value={exp.position}
                                     onSave={(val) => updateField('experience', 'position', val, exp.id)}
                                     placeholder="Position"
-                                    className="text-zinc-600"
+                                    className="text-sky-600"
                                 />
                             </div>
-                            <div className="flex items-center gap-1 text-zinc-500 whitespace-nowrap ml-4 italic">
+                            <div className="flex items-center gap-1 text-sky-500 whitespace-nowrap ml-4 italic">
                                 <EditableText value={exp.startDate} onSave={(val) => updateField('experience', 'startDate', val, exp.id)} placeholder="Start" />
                                 <span>:</span>
                                 <EditableText value={exp.current ? 'HEAD' : exp.endDate} onSave={(val) => updateField('experience', 'endDate', val, exp.id)} placeholder="End" />
@@ -136,7 +136,7 @@ export default function TechMinimal({ previewData }: { previewData?: import("@/s
                             placeholder="Impact points..."
                             multiline
                             label="experience"
-                            className="text-zinc-700 pl-4 border-l-2 border-emerald-500/30 font-mono"
+                            className="text-sky-700 pl-4 border-l-2 border-emerald-500/30 font-mono"
                         />
                     </Reorder.Item>
                 ))}
@@ -176,16 +176,16 @@ export default function TechMinimal({ previewData }: { previewData?: import("@/s
                         <div className="absolute -right-10 top-0 opacity-0 group-hover/edu:opacity-100 transition-opacity z-20">
                             <button
                                 onClick={() => useResumeStore.getState().removeEducation(edu.id)}
-                                className="p-1 text-zinc-400 hover:text-red-500 bg-white border border-zinc-100"
+                                className="p-1 text-sky-400 hover:text-red-500 bg-slate-50 border border-sky-100"
                             >
                                 <Trash2 className="h-3 w-3" />
                             </button>
                         </div>
                         <div className="flex-1">
-                            <EditableText value={edu.school} onSave={(val) => updateField('education', 'school', val, edu.id)} placeholder="University" className="font-bold text-zinc-900" />
-                            <EditableText value={edu.degree} onSave={(val) => updateField('education', 'degree', val, edu.id)} placeholder="Degree" className="text-zinc-600 mt-0.5" />
+                            <EditableText value={edu.school} onSave={(val) => updateField('education', 'school', val, edu.id)} placeholder="University" className="font-bold text-sky-900" />
+                            <EditableText value={edu.degree} onSave={(val) => updateField('education', 'degree', val, edu.id)} placeholder="Degree" className="text-sky-600 mt-0.5" />
                         </div>
-                        <div className="flex items-center gap-1 text-zinc-500 italic mt-1 ml-4">
+                        <div className="flex items-center gap-1 text-sky-500 italic mt-1 ml-4">
                             <EditableText value={edu.startDate} onSave={(val) => updateField('education', 'startDate', val, edu.id)} placeholder="Start" />
                             <span>:</span>
                             <EditableText value={edu.endDate} onSave={(val) => updateField('education', 'endDate', val, edu.id)} placeholder="End" />
@@ -219,7 +219,7 @@ export default function TechMinimal({ previewData }: { previewData?: import("@/s
             </div>
             <h3 className="text-emerald-700 font-bold mb-2 uppercase text-xs tracking-widest">## {sectionLabels.skills}</h3>
             
-            <Reorder.Group axis="y" values={data.skills} onReorder={useResumeStore.getState().setSkillOrder} className="flex flex-wrap gap-2 text-zinc-800 font-mono">
+            <Reorder.Group axis="y" values={data.skills} onReorder={useResumeStore.getState().setSkillOrder} className="flex flex-wrap gap-2 text-sky-800 font-mono">
                 {data.skills.map((skill) => (
                     <Reorder.Item 
                         key={skill.id} 
@@ -236,7 +236,7 @@ export default function TechMinimal({ previewData }: { previewData?: import("@/s
                             onClick={() => useResumeStore.getState().removeSkill(skill.id)}
                             className="opacity-0 group-hover/skill:opacity-100 transition-opacity"
                         >
-                            <Trash2 className="h-3 w-3 text-zinc-300 hover:text-red-500" />
+                            <Trash2 className="h-3 w-3 text-sky-300 hover:text-red-500" />
                         </button>
                     </Reorder.Item>
                 ))}
@@ -277,7 +277,7 @@ export default function TechMinimal({ previewData }: { previewData?: import("@/s
                         <div className="absolute -right-10 top-0 opacity-0 group-hover/proj:opacity-100 transition-opacity z-20">
                             <button
                                 onClick={() => useResumeStore.getState().removeProject(proj.id)}
-                                className="p-1 text-zinc-400 hover:text-red-500 bg-white border border-zinc-100"
+                                className="p-1 text-sky-400 hover:text-red-500 bg-slate-50 border border-sky-100"
                             >
                                 <Trash2 className="h-3 w-3" />
                             </button>
@@ -288,7 +288,7 @@ export default function TechMinimal({ previewData }: { previewData?: import("@/s
                                 value={proj.title}
                                 onSave={(val) => updateField('projects', 'title', val, proj.id)}
                                 placeholder="Repo name"
-                                className="font-bold text-zinc-900 uppercase"
+                                className="font-bold text-sky-900 uppercase"
                             />
                         </div>
                         <EditableText
@@ -296,7 +296,7 @@ export default function TechMinimal({ previewData }: { previewData?: import("@/s
                             onSave={(val) => updateField('projects', 'content', val, proj.id)}
                             placeholder="System specifications and results..."
                             multiline
-                            className="text-zinc-800 leading-relaxed font-mono pl-4 border-l-2 border-emerald-500/10"
+                            className="text-sky-800 leading-relaxed font-mono pl-4 border-l-2 border-emerald-500/10"
                         />
                     </Reorder.Item>
                 ))}
@@ -331,7 +331,7 @@ export default function TechMinimal({ previewData }: { previewData?: import("@/s
                 onSave={(val) => updateField('languages', 'content', val)}
                 placeholder="Languages..."
                 label="languages"
-                className="text-zinc-800 font-mono"
+                className="text-sky-800 font-mono"
             />
         </Reorder.Item>
     );
@@ -356,7 +356,7 @@ export default function TechMinimal({ previewData }: { previewData?: import("@/s
                 onSave={(val) => updateField('interests', 'content', val)}
                 placeholder="Interests..."
                 label="interests"
-                className="text-zinc-800 font-mono"
+                className="text-sky-800 font-mono"
             />
         </Reorder.Item>
     );
@@ -377,7 +377,7 @@ export default function TechMinimal({ previewData }: { previewData?: import("@/s
     };
 
     return (
-        <div className="w-full bg-white text-zinc-900 p-12 sm:p-16 font-mono text-sm leading-relaxed border-t-[12px] border-emerald-600">
+        <div className="w-full bg-slate-50 text-sky-900 p-12 sm:p-16 font-mono text-sm leading-relaxed border-t-[12px] border-emerald-600">
             {/* Header */}
             <header className="mb-12 border-b-2 border-emerald-100 pb-8">
                 <div className="flex items-center gap-2 text-emerald-600 mb-2">
@@ -392,7 +392,7 @@ export default function TechMinimal({ previewData }: { previewData?: import("@/s
                     className="text-4xl font-black tracking-tighter mb-1 uppercase"
                 />
                 <div className="flex items-center gap-2 text-lg text-emerald-700 font-bold mb-6">
-                    <span className="text-zinc-400">~/role/</span>
+                    <span className="text-sky-400">~/role/</span>
                     <EditableText
                         value={data.personalInfo.jobTitle}
                         onSave={(val) => updateField('personalInfo', 'jobTitle', val)}
@@ -402,7 +402,7 @@ export default function TechMinimal({ previewData }: { previewData?: import("@/s
                     />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1 text-zinc-600 text-[12px]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1 text-sky-600 text-[12px]">
                     <div className="flex items-center gap-2">
                         <span className="text-emerald-500 font-bold">mail:</span>
                         <EditableText value={data.personalInfo.email} onSave={(val) => updateField('personalInfo', 'email', val)} placeholder="null" />

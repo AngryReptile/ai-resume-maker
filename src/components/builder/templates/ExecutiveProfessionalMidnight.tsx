@@ -5,7 +5,7 @@ import { Reorder, useDragControls } from 'framer-motion';
 import EntryToolbar from '../EntryToolbar';
 import { useState } from 'react';
 
-export default function ExecutiveProfessional({ previewData }: { previewData?: import("@/store/useResumeStore").ResumeData }) {
+export default function ExecutiveProfessionalMidnight({ previewData }: { previewData?: import("@/store/useResumeStore").ResumeData }) {
     const storeData = useResumeStore((state) => state.data);
     const updateField = useResumeStore((state) => state.updateField);
     const visibleSections = useResumeStore((state) => state.visibleSections);
@@ -34,15 +34,15 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
                 value={id}
                 dragListener={false}
                 dragControls={dragControls}
-                className="mb-10 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200 paged-block"
+                className="mb-10 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200 paged-block"
             >
                 <div 
                     className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2"
                     onPointerDown={(e) => dragControls.start(e)}
                 >
-                    <GripVertical className="h-5 w-5 text-zinc-300" />
+                    <GripVertical className="h-5 w-5 text-sky-300" />
                 </div>
-                <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-[0.3em] border-b-2 border-zinc-900 pb-2 mb-4">
+                <h3 className="text-sm font-bold text-sky-900 uppercase tracking-[0.3em] border-b-2 border-sky-900 pb-2 mb-4">
                     {sectionLabels[id] || section.title}
                 </h3>
                 <EditableText
@@ -50,7 +50,7 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
                     onSave={(val) => updateCustomSection(id, { content: val })}
                     placeholder="Enter content here..."
                     multiline
-                    className="text-base text-zinc-900 leading-relaxed text-justify serif"
+                    className="text-base text-sky-900 leading-relaxed text-justify serif"
                 />
             </Reorder.Item>
         );
@@ -62,15 +62,15 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
             value="summary"
             dragListener={false}
             dragControls={dragControls}
-            className="mb-10 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200 paged-block"
+            className="mb-10 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200 paged-block"
         >
             <div 
                 className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2"
                 onPointerDown={(e) => dragControls.start(e)}
             >
-                <GripVertical className="h-5 w-5 text-zinc-300" />
+                <GripVertical className="h-5 w-5 text-sky-300" />
             </div>
-            <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-[0.3em] border-b-2 border-zinc-900 pb-2 mb-4">
+            <h3 className="text-sm font-bold text-sky-900 uppercase tracking-[0.3em] border-b-2 border-sky-900 pb-2 mb-4">
                 {sectionLabels.summary}
             </h3>
             <EditableText
@@ -79,7 +79,7 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
                 placeholder="Briefly describe your professional background and key achievements..."
                 multiline
                 label="summary"
-                className="text-base text-zinc-900 leading-relaxed text-justify serif italic"
+                className="text-base text-sky-900 leading-relaxed text-justify serif italic"
             />
         </Reorder.Item>
     );
@@ -90,15 +90,15 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
             value="experience"
             dragListener={false}
             dragControls={dragControls}
-            className="mb-10 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200 paged-block"
+            className="mb-10 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200 paged-block"
         >
             <div 
                 className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2"
                 onPointerDown={(e) => dragControls.start(e)}
             >
-                <GripVertical className="h-5 w-5 text-zinc-300" />
+                <GripVertical className="h-5 w-5 text-sky-300" />
             </div>
-            <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-[0.3em] border-b-2 border-zinc-900 pb-2 mb-6">
+            <h3 className="text-sm font-bold text-sky-900 uppercase tracking-[0.3em] border-b-2 border-sky-900 pb-2 mb-6">
                 {sectionLabels.experience}
             </h3>
             <Reorder.Group axis="y" values={data.experience} onReorder={useResumeStore.getState().setExperienceOrder} className="space-y-10">
@@ -121,9 +121,9 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
                                 onSave={(val) => updateField('experience', 'company', val, exp.id)}
                                 placeholder="Company Name"
                                 label="experience"
-                                className="text-2xl font-bold text-zinc-900 uppercase tracking-tight"
+                                className="text-2xl font-bold text-sky-900 uppercase tracking-tight"
                             />
-                            <div className="flex items-center gap-1 text-sm text-zinc-600 font-bold italic mb-1">
+                            <div className="flex items-center gap-1 text-sm text-sky-600 font-bold italic mb-1">
                                 <EditableText value={exp.startDate} onSave={(val) => updateField('experience', 'startDate', val, exp.id)} placeholder="Start" />
                                 <span>-</span>
                                 <EditableText value={exp.current ? 'Present' : exp.endDate} onSave={(val) => updateField('experience', 'endDate', val, exp.id)} placeholder="End" />
@@ -134,7 +134,7 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
                             onSave={(val) => updateField('experience', 'position', val, exp.id)}
                             placeholder="Executive Role Title"
                             label="experience"
-                            className="text-lg font-semibold text-zinc-700 italic border-l-4 border-zinc-200 pl-4 mb-4"
+                            className="text-lg font-semibold text-sky-700 italic border-l-4 border-sky-200 pl-4 mb-4"
                         />
                         <EditableText
                             value={exp.description}
@@ -142,7 +142,7 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
                             placeholder="Highlight your impact and leadership..."
                             multiline
                             label="experience"
-                            className="text-base text-zinc-800 leading-bold leading-relaxed whitespace-pre-wrap"
+                            className="text-base text-sky-800 leading-bold leading-relaxed whitespace-pre-wrap"
                         />
                     </Reorder.Item>
                 ))}
@@ -150,7 +150,7 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
             
             <button 
                 onClick={() => useResumeStore.getState().addExperience()}
-                className="mt-8 flex items-center justify-center gap-2 w-full py-3 rounded border-2 border-dashed border-zinc-200 text-sm font-bold text-zinc-400 hover:text-zinc-900 hover:border-zinc-400 hover:bg-zinc-100 transition-all opacity-0 group-hover/section:opacity-100"
+                className="mt-8 flex items-center justify-center gap-2 w-full py-3 rounded border-2 border-dashed border-sky-200 text-sm font-bold text-sky-400 hover:text-sky-900 hover:border-sky-400 hover:bg-sky-100 transition-all opacity-0 group-hover/section:opacity-100"
             >
                 <Plus className="h-4 w-4" /> Add Leadership Experience
             </button>
@@ -163,22 +163,22 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
             value="education"
             dragListener={false}
             dragControls={dragControls}
-            className="mb-10 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200"
+            className="mb-10 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200"
         >
             <div 
                 className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2"
                 onPointerDown={(e) => dragControls.start(e)}
             >
-                <GripVertical className="h-5 w-5 text-zinc-300" />
+                <GripVertical className="h-5 w-5 text-sky-300" />
             </div>
-            <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-[0.3em] border-b-2 border-zinc-900 pb-2 mb-6">
+            <h3 className="text-sm font-bold text-sky-900 uppercase tracking-[0.3em] border-b-2 border-sky-900 pb-2 mb-6">
                 {sectionLabels.education}
             </h3>
             <Reorder.Group axis="y" values={data.education} onReorder={useResumeStore.getState().setEducationOrder} className="space-y-6">
                 {data.education.map((edu) => (
                     <Reorder.Item key={edu.id} value={edu} className="relative group/edu flex justify-between items-start pt-2">
                         {/* Sub Drag Handle */}
-                        <div className="absolute -left-6 top-2 opacity-0 group-hover/edu:opacity-100 transition-opacity cursor-grab active:cursor-grabbing text-zinc-200">
+                        <div className="absolute -left-6 top-2 opacity-0 group-hover/edu:opacity-100 transition-opacity cursor-grab active:cursor-grabbing text-sky-200">
                             <GripVertical className="h-3 w-3" />
                         </div>
 
@@ -186,7 +186,7 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
                         <div className="absolute -right-10 top-2 opacity-0 group-hover/edu:opacity-100 transition-opacity z-20">
                             <button
                                 onClick={() => useResumeStore.getState().removeEducation(edu.id)}
-                                className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded shadow-sm bg-white border border-zinc-100"
+                                className="p-1.5 text-sky-400 hover:text-red-500 hover:bg-red-50 rounded shadow-sm bg-slate-50 border border-sky-100"
                             >
                                 <Trash2 className="h-4 w-4" />
                             </button>
@@ -197,16 +197,16 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
                                 value={edu.school}
                                 onSave={(val) => updateField('education', 'school', val, edu.id)}
                                 placeholder="University"
-                                className="text-xl font-bold text-zinc-900 underline decoration-zinc-300 underline-offset-4"
+                                className="text-xl font-bold text-sky-900 underline decoration-sky-300 underline-offset-4"
                             />
                             <EditableText
                                 value={edu.degree}
                                 onSave={(val) => updateField('education', 'degree', val, edu.id)}
                                 placeholder="Degree Field"
-                                className="text-base text-zinc-700 italic mt-2"
+                                className="text-base text-sky-700 italic mt-2"
                             />
                         </div>
-                        <div className="flex items-center gap-1 text-sm text-zinc-600 font-bold italic mt-1">
+                        <div className="flex items-center gap-1 text-sm text-sky-600 font-bold italic mt-1">
                             <EditableText value={edu.startDate} onSave={(val) => updateField('education', 'startDate', val, edu.id)} placeholder="Start" />
                             <span>-</span>
                             <EditableText value={edu.endDate} onSave={(val) => updateField('education', 'endDate', val, edu.id)} placeholder="End" />
@@ -217,7 +217,7 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
             
             <button 
                 onClick={() => useResumeStore.getState().addEducation()}
-                className="mt-8 flex items-center justify-center gap-2 w-full py-3 rounded border-2 border-dashed border-zinc-200 text-sm font-bold text-zinc-400 hover:text-zinc-900 hover:border-zinc-400 hover:bg-zinc-100 transition-all opacity-0 group-hover/section:opacity-100"
+                className="mt-8 flex items-center justify-center gap-2 w-full py-3 rounded border-2 border-dashed border-sky-200 text-sm font-bold text-sky-400 hover:text-sky-900 hover:border-sky-400 hover:bg-sky-100 transition-all opacity-0 group-hover/section:opacity-100"
             >
                 <Plus className="h-4 w-4" /> Add Academic Credential
             </button>
@@ -230,15 +230,15 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
             value="skills"
             dragListener={false}
             dragControls={dragControls}
-            className="mb-10 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200 paged-block"
+            className="mb-10 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200 paged-block"
         >
             <div 
                 className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2"
                 onPointerDown={(e) => dragControls.start(e)}
             >
-                <GripVertical className="h-5 w-5 text-zinc-300" />
+                <GripVertical className="h-5 w-5 text-sky-300" />
             </div>
-            <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-[0.3em] border-b-2 border-zinc-900 pb-2 mb-4">
+            <h3 className="text-sm font-bold text-sky-900 uppercase tracking-[0.3em] border-b-2 border-sky-900 pb-2 mb-4">
                 {sectionLabels.skills}
             </h3>
             
@@ -253,13 +253,13 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
                             value={skill.name}
                             onSave={(val) => updateField('skills', 'name', val, skill.id)}
                             placeholder="Skill"
-                            className="text-base text-zinc-900 serif italic underline decoration-zinc-200 underline-offset-4"
+                            className="text-base text-sky-900 serif italic underline decoration-sky-300 underline-offset-4"
                         />
                         <button 
                             onClick={() => useResumeStore.getState().removeSkill(skill.id)}
                             className="opacity-0 group-hover/skill:opacity-100 transition-opacity"
                         >
-                            <Trash2 className="h-3 w-3 text-zinc-300 hover:text-red-500" />
+                            <Trash2 className="h-3 w-3 text-sky-300 hover:text-red-500" />
                         </button>
                     </Reorder.Item>
                 ))}
@@ -267,7 +267,7 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
 
             <button 
                 onClick={() => useResumeStore.getState().addSkill()}
-                className="mt-4 flex items-center justify-center gap-2 w-full py-1.5 rounded border border-dashed border-zinc-200 text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 hover:text-zinc-900 transition-all opacity-0 group-hover/section:opacity-100"
+                className="mt-4 flex items-center justify-center gap-2 w-full py-1.5 rounded border border-dashed border-sky-200 text-[10px] font-bold uppercase tracking-[0.2em] text-sky-400 hover:text-sky-900 transition-all opacity-0 group-hover/section:opacity-100"
             >
                 <Plus className="h-3 w-3" /> Add Skill
             </button>
@@ -280,15 +280,15 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
             value="projects"
             dragListener={false}
             dragControls={dragControls}
-            className="mb-0 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200 paged-block"
+            className="mb-0 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200 paged-block"
         >
             <div 
                 className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2"
                 onPointerDown={(e) => dragControls.start(e)}
             >
-                <GripVertical className="h-5 w-5 text-zinc-300" />
+                <GripVertical className="h-5 w-5 text-sky-300" />
             </div>
-            <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-[0.3em] border-b-2 border-zinc-900 pb-2 mb-4">
+            <h3 className="text-sm font-bold text-sky-900 uppercase tracking-[0.3em] border-b-2 border-sky-900 pb-2 mb-4">
                 {sectionLabels.projects}
             </h3>
             
@@ -309,14 +309,14 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
                             value={proj.title}
                             onSave={(val) => updateField('projects', 'title', val, proj.id)}
                             placeholder="Executive Initiative"
-                            className="text-lg font-bold text-zinc-900 mb-2 uppercase tracking-wide"
+                            className="text-lg font-bold text-sky-900 mb-2 uppercase tracking-wide"
                         />
                         <EditableText
                             value={proj.content}
                             onSave={(val) => updateField('projects', 'content', val, proj.id)}
                             placeholder="Explain the strategic impact and quantitative results..."
                             multiline
-                            className="text-base text-zinc-900 leading-normal serif border-l-2 border-zinc-100 pl-4"
+                            className="text-base text-sky-900 leading-normal serif border-l-2 border-sky-100 pl-4"
                         />
                     </Reorder.Item>
                 ))}
@@ -324,7 +324,7 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
 
             <button 
                 onClick={() => useResumeStore.getState().addProject()}
-                className="mt-8 flex items-center justify-center gap-2 w-full py-3 rounded border-2 border-dashed border-zinc-200 text-sm font-bold text-zinc-400 hover:text-zinc-900 hover:border-zinc-400 transition-all opacity-0 group-hover/section:opacity-100"
+                className="mt-8 flex items-center justify-center gap-2 w-full py-3 rounded border-2 border-dashed border-sky-200 text-sm font-bold text-sky-400 hover:text-sky-900 hover:border-sky-400 transition-all opacity-0 group-hover/section:opacity-100"
             >
                 <Plus className="h-4 w-4" /> Add Strategic Project
             </button>
@@ -337,22 +337,22 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
             value="languages"
             dragListener={false}
             dragControls={dragControls}
-            className="mb-8 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200 paged-block"
+            className="mb-8 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200 paged-block"
         >
             <div 
                 className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2"
                 onPointerDown={(e) => dragControls.start(e)}
             >
-                <GripVertical className="h-5 w-5 text-zinc-300" />
+                <GripVertical className="h-5 w-5 text-sky-300" />
             </div>
-            <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-[0.3em] border-b-2 border-zinc-900 pb-2 mb-4">
+            <h3 className="text-sm font-bold text-sky-900 uppercase tracking-[0.3em] border-b-2 border-sky-900 pb-2 mb-4">
                 {sectionLabels.languages}
             </h3>
             <EditableText
                 value={data.languages}
                 onSave={(val) => updateField('languages', 'content', val)}
                 placeholder="Languages..."
-                className="text-base text-zinc-900 serif italic"
+                className="text-base text-sky-900 serif italic"
             />
         </Reorder.Item>
     );
@@ -363,22 +363,22 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
             value="interests"
             dragListener={false}
             dragControls={dragControls}
-            className="mb-0 group/section relative p-2 -m-2 rounded-lg hover:bg-zinc-50 transition-all border border-transparent hover:border-zinc-200 paged-block"
+            className="mb-0 group/section relative p-2 -m-2 rounded-lg hover:bg-sky-50 transition-all border border-transparent hover:border-sky-200 paged-block"
         >
             <div 
                 className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover/section:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-2"
                 onPointerDown={(e) => dragControls.start(e)}
             >
-                <GripVertical className="h-5 w-5 text-zinc-300" />
+                <GripVertical className="h-5 w-5 text-sky-300" />
             </div>
-            <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-[0.3em] border-b-2 border-zinc-900 pb-2 mb-4">
+            <h3 className="text-sm font-bold text-sky-900 uppercase tracking-[0.3em] border-b-2 border-sky-900 pb-2 mb-4">
                 {sectionLabels.interests}
             </h3>
             <EditableText
                 value={data.interests}
                 onSave={(val) => updateField('interests', 'content', val)}
                 placeholder="Interests..."
-                className="text-base text-zinc-900 serif"
+                className="text-base text-sky-900 serif"
             />
         </Reorder.Item>
     );
@@ -400,41 +400,41 @@ export default function ExecutiveProfessional({ previewData }: { previewData?: i
 
 
     return (
-        <div className="w-full bg-white text-zinc-900 p-14 sm:p-20 font-serif leading-relaxed">
+        <div className="w-full bg-slate-50 text-sky-900 p-14 sm:p-20 font-serif leading-relaxed">
             {/* Header */}
-            <div className="text-center mb-16 border-b-8 border-double border-zinc-900 pb-8">
+            <div className="text-center mb-16 border-b-8 border-double border-sky-900 pb-8">
                 <EditableText
                     value={data.personalInfo.fullName}
                     onSave={(val) => updateField('personalInfo', 'fullName', val)}
                     placeholder="Your Full Name"
                     label="personalInfo"
-                    className="text-5xl font-extrabold text-zinc-950 tracking-[0.15em] uppercase mb-4"
+                    className="text-5xl font-extrabold text-sky-950 tracking-[0.15em] uppercase mb-4"
                 />
                 <EditableText
                     value={data.personalInfo.jobTitle}
                     onSave={(val) => updateField('personalInfo', 'jobTitle', val)}
                     placeholder="Executive Position"
                     label="personalInfo"
-                    className="text-xl text-zinc-600 font-bold uppercase tracking-[0.25em] italic"
+                    className="text-xl text-sky-600 font-bold uppercase tracking-[0.25em] italic"
                 />
                 
-                <div className="h-0.5 w-24 bg-zinc-400 mx-auto my-8"></div>
+                <div className="h-0.5 w-24 bg-sky-400 mx-auto my-8"></div>
 
-                <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm font-bold text-zinc-800 uppercase tracking-widest">
+                <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm font-bold text-sky-800 uppercase tracking-widest">
                     <div className="flex items-center gap-2">
-                        <Mail className="h-3.5 w-3.5 text-zinc-400" />
+                        <Mail className="h-3.5 w-3.5 text-sky-400" />
                         <EditableText value={data.personalInfo.email} onSave={(val) => updateField('personalInfo', 'email', val)} placeholder="email@domain.com" />
                     </div>
                     <div className="flex items-center gap-2">
-                        <Phone className="h-3.5 w-3.5 text-zinc-400" />
+                        <Phone className="h-3.5 w-3.5 text-sky-400" />
                         <EditableText value={data.personalInfo.phone} onSave={(val) => updateField('personalInfo', 'phone', val)} placeholder="+00 000 000" />
                     </div>
                     <div className="flex items-center gap-2">
-                        <MapPin className="h-3.5 w-3.5 text-zinc-400" />
+                        <MapPin className="h-3.5 w-3.5 text-sky-400" />
                         <EditableText value={data.personalInfo.location} onSave={(val) => updateField('personalInfo', 'location', val)} placeholder="City, Country" />
                     </div>
                     {data.personalInfo.website && (
-                        <div className="flex items-center gap-2 text-indigo-900">
+                        <div className="flex items-center gap-2 text-blue-900">
                             <Globe className="h-3.5 w-3.5" />
                             <EditableText value={data.personalInfo.website} onSave={(val) => updateField('personalInfo', 'website', val)} placeholder="Website" />
                         </div>

@@ -1,119 +1,251 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
-  --animate-warp: warp 20s ease-in-out infinite alternate;
-  --animate-warp-reverse: warp-reverse 25s ease-in-out infinite alternate;
-}
-
-@keyframes pulse {
-
-  0%,
-  100% {
-    opacity: 0.2;
-    transform: scale(1);
+@theme {
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  50% {
-    opacity: 0.6;
-    transform: scale(1.1);
+  --animate-fade-in: fadeIn 1s ease-out forwards;
+  --animate-warp: warp 20s ease-in-out infinite;
+  --animate-warp-reverse: warp-reverse 25s ease-in-out infinite;
+
+  @keyframes warp {
+    0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+    33% { transform: translateY(-20px) scale(1.1) rotate(2deg); }
+    66% { transform: translateY(20px) scale(0.9) rotate(-2deg); }
+  }
+
+  @keyframes warp-reverse {
+    0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+    33% { transform: translateY(20px) scale(0.9) rotate(-2deg); }
+    66% { transform: translateY(-20px) scale(1.1) rotate(2deg); }
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+/* 
+ * TAILWIND V4 - LIQUID GLASS GLOBAL STYLES
+ * High-fidelity aesthetics for the AI Resume Maker
+ */
+
+@layer base {
+  body {
+    background-color: #0a0a0f;
+    color: #f4f4f5;
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes warp {
-  0% {
-    transform: scale(1) translate(0px, 0px);
-    opacity: 0.7;
-  }
-
-  33% {
-    transform: scale(1.15) translate(30px, -40px);
-    opacity: 1;
-  }
-
-  66% {
-    transform: scale(0.9) translate(-20px, 30px);
-    opacity: 0.6;
-  }
-
-  100% {
-    transform: scale(1.05) translate(40px, 10px);
-    opacity: 0.8;
+  ::selection {
+    background-color: rgba(99, 102, 241, 0.3);
+    color: white;
   }
 }
 
-@keyframes warp-reverse {
-  0% {
-    transform: scale(1) translate(0px, 0px);
-    opacity: 0.8;
+@layer components {
+  /* Liquid Glass - High Fidelity Effect */
+  .liquid-glass {
+    @apply bg-[#0a0a0a]/60 backdrop-blur-2xl border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)];
+    position: relative;
+    overflow: hidden;
   }
 
-  33% {
-    transform: scale(0.9) translate(-30px, 20px);
-    opacity: 0.6;
-  }
-
-  66% {
-    transform: scale(1.1) translate(20px, -30px);
-    opacity: 1;
-  }
-
-  100% {
-    transform: scale(1) translate(-10px, -10px);
-    opacity: 0.7;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #000000;
-    --foreground: #ffffff;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-inter), sans-serif;
-}
-
-@media print {
-  body * {
-    visibility: hidden;
-  }
-
-  .my-print-container,
-  .my-print-container * {
-    visibility: visible;
-  }
-
-  .my-print-container {
+  .liquid-glass::before {
+    content: '';
     position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.02) 100%);
+    pointer-events: none;
   }
 
+  /* Glass Stroke - Thin specular highlights */
+  .glass-stroke {
+    @apply border border-white/10 ring-1 ring-white/5;
+  }
+
+  /* Liquid Gradient - Smooth transitions */
+  .liquid-gradient {
+    @apply bg-gradient-to-br from-white/[0.08] via-transparent to-white/[0.02];
+  }
+
+  /* Animated Status Dots */
+  .status-dot {
+    @apply h-1.5 w-1.5 rounded-full;
+  }
+
+  /* Custom Smooth Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-white/5 rounded-full hover:bg-white/10 transition-colors;
+  }
+
+  /* Typography Utilities */
+  .font-display {
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+@layer utilities {
+  /* High Fidelity Noise Texture */
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+  }
+
+  /* Glass Animation */
+  .animate-glass {
+    animation: glass-shimmer 8s linear infinite;
+  }
+
+  @keyframes glass-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  /* Enhanced Gradients */
+  .bg-radial-gradient {
+    background: radial-gradient(circle at center, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%);
+  }
+
+  .bg-mesh-gradient {
+    background: 
+      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(99, 102, 241, 0.15) 0px, transparent 50%);
+  }
+}
+
+/* Robust Print Architecture */
+@media print {
   @page {
+    size: A4;
     margin: 0;
   }
+
+  html, body {
+    overflow: visible !important;
+    height: auto !important;
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide non-essential UI */
+  .print-hidden,
+  .page-label,
+  .fixed,
+  .absolute.inset-0.pointer-events-none {
+    display: none !important;
+  }
+
+  .workspace-backdrop {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    width: 100% !important;
+  }
+
+  /* Force premium colors and backgrounds */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Reset layout for print */
+  .relative {
+    position: relative !important;
+  }
+
+  .shadow-none {
+    box-shadow: none !important;
+  }
+
+  /* Automatically hide empty placeholders on export */
+  [contenteditable="true"]:empty::before,
+  [placeholder]:empty::before,
+  .empty\:before\:content-\[attr\(placeholder\)\]:empty::before {
+    content: '' !important;
+    display: none !important;
+    color: transparent !important;
+  }
+
+  /* Ensure the A4 sheet is properly positioned for print */
+  [style*="width: 210mm"], .print-container {
+    width: 210mm !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+}
+.workspace-backdrop {
+  @apply bg-[#0f0f0f] relative min-h-full transition-colors duration-500 flex flex-col items-center py-20 gap-16;
+}
+
+.resume-page {
+  @apply bg-white relative shadow-[0_30px_60px_rgba(0,0,0,0.5)] transition-all duration-700 mx-auto;
+  width: 210mm;
+  min-height: 297mm;
+  padding: 15mm;
+  overflow: visible;
+}
+
+.page-divider {
+  @apply relative w-full h-[1px] bg-white/5 my-4 flex items-center justify-center;
+}
+
+.page-label {
+  @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-1.5 rounded-full bg-[#1a1a1a] border border-white/10 text-[9px] font-black uppercase tracking-[0.4em] text-zinc-500 backdrop-blur-xl shadow-2xl transition-all hover:text-indigo-400 hover:border-indigo-500/30;
+}
+
+.paged-paper-bg {
+  width: 210mm;
+  background-color: #0f0f0f;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    #ffffff 0px,
+    #ffffff 1122px,
+    #0f0f0f 1122px,
+    #0f0f0f 1162px
+  );
+  background-size: 100% 1162px;
+}
+
+/* Page Break & Orphan Controls */
+.break-inside-avoid {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.push-to-next-page {
+  margin-top: var(--push-margin, 0);
+}
+
+/* Refinement for Paper Preview */
+.my-print-container {
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+}
+
+@page {
+  size: A4;
+  margin: 0;
 }
